@@ -32,18 +32,15 @@ setup(
         "Issue Tracker": "https://github.com/agrc/project-moonwalk/issues",
     },
     keywords=["gis"],
-    install_requires=[
-        "arcgis>=2.3,<2.4",
-    ],
+    install_requires=["arcgis==2.*", "google-cloud-storage==2.*"],
     extras_require={
         "tests": [
-            "pytest-cov>=3,<6",
-            "pytest-instafail==0.5.*",
+            "pytest-cov==5.*",
+            "pytest-instafail==0.*",
             "pytest-mock==3.*",
             "pytest-ruff==0.*",
             "pytest-watch==4.*",
-            "pytest>=6,<9",
-            "black>=24.4.2,<24.5",
+            "pytest==8.*",
             "ruff==0.*",
         ]
     },
@@ -53,6 +50,7 @@ setup(
     entry_points={
         "console_scripts": [
             "backup = backup.main:backup",
+            "backup_local = backup.main:local_backup",
         ]
     },
 )
