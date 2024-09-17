@@ -2,12 +2,12 @@ import json
 from datetime import datetime
 from pathlib import Path
 from pprint import pprint
-from time import sleep
 
 import arcgis
 from utilities import delete_folder, write_to_bucket
 
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
+EXPORT_FILENAME = "moonwalk-export.zip"
 
 
 def _get_secrets():
@@ -35,6 +35,13 @@ def _get_secrets():
     raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
+def cleanup_exports(gis):
+    print("Cleaning up any old exports...")
+    items = gis.content.search(query=f"title:{EXPORT_FILENAME}")
+    for item in items:
+        item.delete(permanent=True)
+
+
 def backup():
     secrets = _get_secrets()
     gis = arcgis.GIS(
@@ -43,17 +50,19 @@ def backup():
         password=secrets["AGOL_PASSWORD"],
     )
 
+    cleanup_exports(gis)
+
     page_size = 100
     has_more = True
     start = 1
     summary = {}
-    export_jobs = []
     supported_types = [
         arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value,
-        arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAP.value,
-        arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
+        # restoring some of these types below just broken them. Perhaps these can be implemented in the future...
+        # arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
+        # arcgis.gis.ItemTypeEnum.WEB_MAP.value,
+        # arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
+        # arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
     ]
 
     while has_more:
@@ -65,7 +74,11 @@ def backup():
         )
 
         #: couldn't query or filter multiple types at once, so filtering here
-        for item in [filteredItem for filteredItem in response["results"] if filteredItem.type in supported_types]:
+        for item in response["results"]:
+            if item.type not in supported_types:
+                print(f"Unsupported item type, skipping: {item.title} ({item.type}, {item.id})")
+                continue
+
             print(f"Preparing {item.title} ({item.type}, {item.id})")
             item_json = dict(item)
 
@@ -79,40 +92,29 @@ def backup():
             }
 
             if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
-                print("Requesting feature service export")
+                try:
+                    print("Requesting feature service export")
+                    export_item = item.export(
+                        EXPORT_FILENAME,
+                        arcgis.gis.ItemTypeEnum.FILE_GEODATABASE.value,
+                        #: This could be set to false and then we could download later. We tried this and the problem was that we could not find a reliable way to know if the export was complete.
+                        wait=True,
+                        tags=[],
+                    )
 
-                job = item.export(
-                    "moonwalk-export.zip",
-                    arcgis.gis.ItemTypeEnum.FILE_GEODATABASE.value,
-                    wait=False,
-                    tags=[],
-                )
-                export_jobs.append(job)
+                    print("Downloading exported item...")
+                    export_item.download(save_path=f"./temp/sample-bucket/{item.id}/short", file_name="data.zip")
+                except Exception as error:
+                    print(error)
+                    print(
+                        f"Failed to export and download {export_item.title} ({export_item.id}), {export_item.status()}"
+                    )
+                export_item.delete(permanent=True)
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
 
-    print("Downloading export jobs")
-
-    while len(export_jobs) > 0:
-        for job in export_jobs:
-            item = arcgis.gis.Item(gis, job["exportItemId"])
-
-            try:
-                item.download(save_path=f'./temp/sample-bucket/{job["serviceItemId"]}', file_name="data.zip")
-                job["downloaded"] = True
-                item.delete(permanent=True)
-            except Exception as error:
-                print(error)
-                print(f"Failed to download {item.title} ({item.id}), {item.status()}")
-
-        export_jobs = [job for job in export_jobs if "downloaded" not in job]
-
-        if len(export_jobs) > 0:
-            print("waiting 5 seconds...", len(export_jobs))
-            sleep(5)
-
-    pprint(summary, indent=2)
+    pprint(summary)
 
 
 def local_backup():
