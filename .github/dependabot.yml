@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: pip
-    directory: /
+    directory: /packages/backup
     schedule:
       interval: monthly
     groups:
@@ -20,7 +20,7 @@ updates:
       ci-dependencies:
         dependency-type: "production"
   - package-ecosystem: npm
-    directory: /
+    directory: /packages/restore
     schedule:
       interval: monthly
     groups:
