@@ -24,6 +24,7 @@ jobs:
         id: release-please
         uses: agrc/release-composite-action@v1
         with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           github-app-id: ${{ secrets.UGRC_RELEASE_BOT_APP_ID }}
           github-app-key: ${{ secrets.UGRC_RELEASE_BOT_APP_KEY }}
           github-app-name: ${{ secrets.UGRC_RELEASE_BOT_NAME }}
@@ -32,6 +33,8 @@ jobs:
   deploy-ui-dev:
     name: Deploy UI to staging
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     environment:
       name: dev
       url: https://ut-dts-agrc-moonwalk-dev.web.app/
