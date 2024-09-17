@@ -58,10 +58,11 @@ def backup():
     summary = {}
     supported_types = [
         arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value,
-        arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAP.value,
-        arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
+        # restoring some of these types below just broken them. Perhaps these can be implemented in the future...
+        # arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
+        # arcgis.gis.ItemTypeEnum.WEB_MAP.value,
+        # arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
+        # arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
     ]
 
     while has_more:
@@ -73,7 +74,11 @@ def backup():
         )
 
         #: couldn't query or filter multiple types at once, so filtering here
-        for item in [filteredItem for filteredItem in response["results"] if filteredItem.type in supported_types]:
+        for item in response["results"]:
+            if item.type not in supported_types:
+                print(f"Unsupported item type, skipping: {item.title} ({item.type}, {item.id})")
+                continue
+
             print(f"Preparing {item.title} ({item.type}, {item.id})")
             item_json = dict(item)
 
