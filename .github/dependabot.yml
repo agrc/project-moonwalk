@@ -1,7 +1,19 @@
 version: 2
 updates:
   - package-ecosystem: pip
-    directory: /
+    directory: /jobs
+    schedule:
+      interval: monthly
+    groups:
+      safe-dependencies:
+        update-types: ['minor', 'patch']
+      major-dependencies:
+        update-types: ['major']
+    commit-message:
+      prefix: deps
+      prefix-development: deps(dev)
+  - package-ecosystem: pip
+    directory: /functions
     schedule:
       interval: monthly
     groups:
