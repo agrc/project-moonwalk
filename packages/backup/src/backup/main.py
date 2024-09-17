@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 from pprint import pprint
-from time import sleep
 
 import arcgis
 from utilities import delete_folder, write_to_bucket
@@ -57,7 +56,6 @@ def backup():
     has_more = True
     start = 1
     summary = {}
-    export_jobs = []
     supported_types = [
         arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value,
         arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
@@ -89,40 +87,29 @@ def backup():
             }
 
             if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
-                print("Requesting feature service export")
+                try:
+                    print("Requesting feature service export")
+                    export_item = item.export(
+                        EXPORT_FILENAME,
+                        arcgis.gis.ItemTypeEnum.FILE_GEODATABASE.value,
+                        #: This could be set to false and then we could download later. We tried this and the problem was that we could not find a reliable way to know if the export was complete.
+                        wait=True,
+                        tags=[],
+                    )
 
-                job = item.export(
-                    "moonwalk-export.zip",
-                    arcgis.gis.ItemTypeEnum.FILE_GEODATABASE.value,
-                    wait=False,
-                    tags=[],
-                )
-                export_jobs.append(job)
+                    print("Downloading exported item...")
+                    export_item.download(save_path=f"./temp/sample-bucket/{item.id}", file_name="data.zip")
+                except Exception as error:
+                    print(error)
+                    print(
+                        f"Failed to export and download {export_item.title} ({export_item.id}), {export_item.status()}"
+                    )
+                export_item.delete(permanent=True)
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
 
-    print("Downloading export jobs")
-
-    while len(export_jobs) > 0:
-        for job in export_jobs:
-            item = arcgis.gis.Item(gis, job["exportItemId"])
-
-            try:
-                item.download(save_path=f'./temp/sample-bucket/{job["serviceItemId"]}', file_name="data.zip")
-                job["downloaded"] = True
-                item.delete(permanent=True)
-            except Exception as error:
-                print(error)
-                print(f"Failed to download {item.title} ({item.id}), {item.status()}")
-
-        export_jobs = [job for job in export_jobs if "downloaded" not in job]
-
-        if len(export_jobs) > 0:
-            print("waiting 5 seconds...", len(export_jobs))
-            sleep(5)
-
-    pprint(summary, indent=2)
+    pprint(summary)
 
 
 def local_backup():
