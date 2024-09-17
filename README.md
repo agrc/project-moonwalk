@@ -18,5 +18,5 @@ The restore service consists of a website that allows you to view your backups a
 
 1. conda create --name moonwalk-backup python=3.11
 1. conda activate moonwalk-backup
-1. cd packages/backup
+1. cd jobs/backup
 1. pip install -e ".[tests]"

@@ -1,14 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: pip
-    directory: /packages/backup
+    directory: /
     schedule:
       interval: monthly
     groups:
       safe-dependencies:
-        update-types: ["minor", "patch"]
+        update-types: ['minor', 'patch']
       major-dependencies:
-        update-types: ["major"]
+        update-types: ['major']
     commit-message:
       prefix: deps
       prefix-development: deps(dev)
@@ -18,16 +18,16 @@ updates:
       interval: monthly
     groups:
       ci-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
   - package-ecosystem: npm
-    directory: /packages/restore
+    directory: /
     schedule:
       interval: monthly
     groups:
       safe-dependencies:
-        update-types: ["minor", "patch"]
+        update-types: ['minor', 'patch']
       major-dependencies:
-        update-types: ["major"]
+        update-types: ['major']
     commit-message:
       prefix: deps
       prefix-development: deps(dev)

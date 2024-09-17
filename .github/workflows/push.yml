@@ -35,9 +35,6 @@ jobs:
     environment:
       name: dev
       url: https://ut-dts-agrc-moonwalk-dev.web.app/
-    defaults:
-      run:
-        working-directory: ./package/restore-ui
 
     steps:
       - name: 🚀 Deploy

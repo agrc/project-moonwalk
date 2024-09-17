@@ -1,11 +1,11 @@
-name: 🐍 Release events
+name: Release Events
 
 on:
   release:
     types: [published]
 
 concurrency:
-  group: "${{ github.head_ref || github.ref }}"
+  group: '${{ github.head_ref || github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          token_format: "access_token"
+          token_format: 'access_token'
 
       - name: 🐳 Set up Docker Buildx
         id: builder
@@ -133,7 +133,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          token_format: "access_token"
+          token_format: 'access_token'
 
       - name: 🐳 Set up Docker Buildx
         id: builder
