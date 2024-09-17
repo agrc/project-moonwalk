@@ -8,6 +8,7 @@ import arcgis
 from utilities import delete_folder, write_to_bucket
 
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
+EXPORT_FILENAME = "moonwalk-export.zip"
 
 
 def _get_secrets():
@@ -35,6 +36,13 @@ def _get_secrets():
     raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
+def cleanup_exports(gis):
+    print("Cleaning up any old exports...")
+    items = gis.content.search(query=f"title:{EXPORT_FILENAME}")
+    for item in items:
+        item.delete(permanent=True)
+
+
 def backup():
     secrets = _get_secrets()
     gis = arcgis.GIS(
@@ -42,6 +50,8 @@ def backup():
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
     )
+
+    cleanup_exports(gis)
 
     page_size = 100
     has_more = True
