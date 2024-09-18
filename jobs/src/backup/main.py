@@ -1,38 +1,17 @@
-import json
 from datetime import datetime
-from pathlib import Path
+from os import getenv
 from pprint import pprint
 
 import arcgis
-from utilities import delete_folder, write_to_bucket
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from utilities import get_secrets, write_to_bucket  # noqa: E402
 
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
+# NEEDS_WEEKLY_BACKUP = True
 EXPORT_FILENAME = "moonwalk-export.zip"
-
-
-def _get_secrets():
-    """A helper method for loading secrets from either a GCF mount point or a local secrets folder.
-    json file
-
-    Raises:
-        FileNotFoundError: If the secrets file can't be found.
-
-    Returns:
-        dict: The secrets .json loaded as a dictionary
-    """
-
-    secret_folder = Path("/secrets")
-
-    #: Try to get the secrets from the Cloud Function mount point
-    if secret_folder.exists():
-        return json.loads(Path("/secrets/app/secrets.json").read_text(encoding="utf-8"))
-
-    #: Otherwise, try to load a local copy for local development
-    secret_folder = Path(__file__).parent / "secrets"
-    if secret_folder.exists():
-        return json.loads((secret_folder / "secrets.json").read_text(encoding="utf-8"))
-
-    raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
 def cleanup_exports(gis):
@@ -43,9 +22,10 @@ def cleanup_exports(gis):
 
 
 def backup():
-    secrets = _get_secrets()
+    secrets = get_secrets()
+
     gis = arcgis.GIS(
-        url=secrets["AGOL_ORG"],
+        url=getenv("AGOL_ORG"),
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
     )
@@ -68,13 +48,13 @@ def backup():
     while has_more:
         response = gis.content.advanced_search(
             query=f"orgid:{gis.properties.id}",
-            filter=f'tags:{secrets["TAG_NAME"]}',
+            filter=f'tags:{getenv("TAG_NAME")}',
             max_items=page_size,
             start=start,
         )
 
-        #: couldn't query or filter multiple types at once, so filtering here
         for item in response["results"]:
+            #: we couldn't query or filter multiple types at once, so filtering here
             if item.type not in supported_types:
                 print(f"Unsupported item type, skipping: {item.title} ({item.type}, {item.id})")
                 continue
@@ -117,11 +97,5 @@ def backup():
     pprint(summary)
 
 
-def local_backup():
-    temp_folder = Path("./temp")
-    delete_folder(temp_folder)
-    backup()
-
-
 if __name__ == "__main__":
-    local_backup()
+    backup()
