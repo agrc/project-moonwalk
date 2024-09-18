@@ -6,6 +6,7 @@
     "fromitem",
     "instafail",
     "orgid",
+    "tanstack",
     "venv"
   ],
   "editor.formatOnSave": true,

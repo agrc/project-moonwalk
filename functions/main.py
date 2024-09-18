@@ -2,8 +2,12 @@ import json
 from pathlib import Path
 
 import arcgis
+from firebase_admin import initialize_app
+from firebase_functions import https_fn
 
 UPLOAD_ITEM_TITLE = "moonwalk-restore"
+
+initialize_app()
 
 
 def _get_secrets():
@@ -137,8 +141,17 @@ def recreate_item(item_id, sub_folder, gis):
 
     print(f"new item created: {published_item.id}")
 
+    return published_item.id
 
-def restore(item_id, sub_folder):
+
+@https_fn.on_request()
+def restore(request: https_fn.Request) -> https_fn.Response:
+    item_id = request.args.get("item_id")
+    sub_folder = request.args.get("sub_folder")
+
+    if not item_id or not sub_folder:
+        return https_fn.Response("Missing required parameters", status=400)
+
     secrets = _get_secrets()
     gis = arcgis.GIS(
         url=secrets["AGOL_ORG"],
@@ -159,6 +172,8 @@ def restore(item_id, sub_folder):
     if item_exists:
         if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
             truncate_and_append(item_id, sub_folder, gis, item)
+
+            return https_fn.Response("Item restored successfully via truncate and append")
         else:
             raise NotImplementedError(f"Unsupported item type: {item.type}")
             #: this breaks web maps and experience builder projects, not sure why
@@ -173,18 +188,6 @@ def restore(item_id, sub_folder):
             #     print("Failed to update item")
             #     return
     else:
-        recreate_item(item_id, sub_folder, gis)
+        new_id = recreate_item(item_id, sub_folder, gis)
 
-    print("Restore complete!")
-
-
-def local_restore():
-    #: truncate and load
-    restore("3ac0f9833f7d4335acebd62fe0695635", "short")
-
-    #: recreate feature service
-    # restore("33e9c822af3b4d08844d58169410f9fa", "short")
-
-
-if __name__ == "__main__":
-    local_restore()
+        return https_fn.Response(f"Item restored successfully via recreation. New Item ID: {new_id}")

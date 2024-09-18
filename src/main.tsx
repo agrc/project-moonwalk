@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
@@ -14,14 +15,18 @@ let firebaseConfig = {
   measurementId: '',
 };
 
-if (import.meta.env.VITE_FIREBASE_CONFIG) {
-  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
+if (import.meta.env.VITE_FIREBASE) {
+  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE);
 }
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </FirebaseAppProvider>
   </React.StrictMode>,
 );
