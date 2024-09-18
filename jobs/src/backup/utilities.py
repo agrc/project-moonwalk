@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+
 from google.cloud import storage
+
 # from google.oauth2 import service_account
 
 # CREDENTIAL_FILE = Path("./service-account.json")
@@ -17,10 +19,11 @@ from google.cloud import storage
 STORAGE_CLIENT = storage.Client()
 BUCKET_NAME = "ut-dts-agrc-moonwalk-dev"
 
+
 def write_to_gcs(bucket_name, folder, filename, data, needs_weekly_backup):
     bucket = STORAGE_CLIENT.bucket(bucket_name)
 
-    paths = [folder / 'short' / filename]
+    paths = [folder / "short" / filename]
 
     if needs_weekly_backup:
         paths.append(folder / "long" / filename)
@@ -32,18 +35,20 @@ def write_to_gcs(bucket_name, folder, filename, data, needs_weekly_backup):
         except Exception as error:
             print(error)
 
-def write_to_bucket(bucket, folder, filename, data, needs_weekly_backup):
-    base_path = Path(f"./temp/{bucket}/{folder}")
-    paths = [base_path / 'short' / filename]
+
+def write_to_bucket(bucket, item_id, filename, data, needs_weekly_backup):
+    base_path = Path(f"./temp/{bucket}")
+    paths = [base_path / "short" / item_id / filename]
 
     if needs_weekly_backup:
-        paths.append(base_path / 'long' / filename)
+        paths.append(base_path / "long" / item_id / filename)
 
     for path in paths:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(path, "w") as f:
             json.dump(data, f)
+
 
 def delete_folder(pth):
     if not pth.exists():

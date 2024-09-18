@@ -72,7 +72,7 @@ def truncate_and_append(item_id, sub_folder, gis, item):
 
 def upload_fgdb(item_id, sub_folder, gis):
     print("uploading fgdb")
-    zip_path = Path(f"./temp/sample-bucket/{item_id}/{sub_folder}/data.zip")
+    zip_path = Path(f"./temp/sample-bucket/{sub_folder}/{item_id}/data.zip")
     fgdb_item = gis.content.add(
         item_properties={
             "type": "File Geodatabase",
@@ -91,7 +91,7 @@ def recreate_item(item_id, sub_folder, gis):
     fgdb_item = upload_fgdb(item_id, sub_folder, gis)
 
     original_item_properties = json.loads(
-        Path(f"./temp/sample-bucket/{item_id}/{sub_folder}/item.json").read_text(encoding="utf-8")
+        Path(f"./temp/sample-bucket/{sub_folder}/{item_id}/item.json").read_text(encoding="utf-8")
     )
 
     print("publishing")
