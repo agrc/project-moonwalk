@@ -103,7 +103,7 @@ def backup():
                     )
 
                     print("Downloading exported item...")
-                    export_item.download(save_path=f"./temp/sample-bucket/{item.id}/short", file_name="data.zip")
+                    export_item.download(save_path=f"./temp/sample-bucket/short/{item.id}", file_name="data.zip")
                 except Exception as error:
                     print(error)
                     print(
