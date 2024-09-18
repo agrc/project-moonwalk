@@ -36,6 +36,7 @@ setup(
     install_requires=[
         "arcgis==2.*",
         "google-cloud-storage==2.*",
+        "google-cloud-firestore==2.*",
         "python-dotenv==1.*",
     ],
     extras_require={

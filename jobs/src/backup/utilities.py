@@ -1,22 +1,14 @@
 import json
+from os import getenv
 from pathlib import Path
 
-from google.cloud import storage
-
-# from google.oauth2 import service_account
-
-# CREDENTIAL_FILE = Path("./service-account.json")
-
-# if not CREDENTIAL_FILE.exists():
-#     raise FileNotFoundError("missing service account")
-
-# credential_data = {}
-# with CREDENTIAL_FILE.open() as reader:
-#     credential_data = json.load(reader)
-
-# CREDENTIALS = service_account.Credentials.from_service_account_info(credential_data)
+from google.cloud import firestore, storage
 
 STORAGE_CLIENT = storage.Client()
+project = None
+if getenv("FIRESTORE_EMULATOR_HOST"):
+    project = "ut-dts-agrc-moonwalk-dev"
+FIRESTORE_CLIENT = firestore.Client(project)
 
 
 def get_secrets():
@@ -56,3 +48,11 @@ def write_to_bucket(bucket, item_id, filename, data, needs_weekly_backup):
     for path in paths:
         blob = bucket.blob(path)
         blob.upload_from_string(json.dumps(data))
+
+
+def write_to_firestore(item_id, item_name, date):
+    print("writing to firestore")
+    ref = FIRESTORE_CLIENT.collection("items").document(item_id)
+    result = ref.set({"name": item_name, "lastBackup": date})
+
+    print(result)

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from utilities import get_secrets, write_to_bucket  # noqa: E402
+from utilities import get_secrets, write_to_bucket, write_to_firestore  # noqa: E402
 
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
 # NEEDS_WEEKLY_BACKUP = True
@@ -84,6 +84,8 @@ def backup():
 
                     print("Downloading exported item...")
                     export_item.download(save_path=f"./temp/sample-bucket/short/{item.id}", file_name="data.zip")
+
+                    write_to_firestore(item.id, item.title, datetime.now().isoformat())
                 except Exception as error:
                     print(error)
                     print(
