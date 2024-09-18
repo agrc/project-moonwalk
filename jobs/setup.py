@@ -4,6 +4,7 @@
 setup.py
 A module that installs the backup process as a module
 """
+
 from glob import glob
 from os.path import basename, splitext
 
@@ -32,7 +33,11 @@ setup(
         "Issue Tracker": "https://github.com/agrc/project-moonwalk/issues",
     },
     keywords=["gis"],
-    install_requires=["arcgis==2.*", "google-cloud-storage==2.*"],
+    install_requires=[
+        "arcgis==2.*",
+        "google-cloud-storage==2.*",
+        "python-dotenv==1.*",
+    ],
     extras_require={
         "tests": [
             "pytest-cov==5.*",
@@ -50,7 +55,6 @@ setup(
     entry_points={
         "console_scripts": [
             "backup = backup.main:backup",
-            "backup_local = backup.main:local_backup",
         ]
     },
 )

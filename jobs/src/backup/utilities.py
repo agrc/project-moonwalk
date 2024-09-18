@@ -17,46 +17,42 @@ from google.cloud import storage
 # CREDENTIALS = service_account.Credentials.from_service_account_info(credential_data)
 
 STORAGE_CLIENT = storage.Client()
-BUCKET_NAME = "ut-dts-agrc-moonwalk-dev"
 
 
-def write_to_gcs(bucket_name, folder, filename, data, needs_weekly_backup):
-    bucket = STORAGE_CLIENT.bucket(bucket_name)
+def get_secrets():
+    """A helper method for loading secrets from either a GCF mount point or a local secrets folder.
+    json file
 
-    paths = [folder / "short" / filename]
+    Raises:
+        FileNotFoundError: If the secrets file can't be found.
 
-    if needs_weekly_backup:
-        paths.append(folder / "long" / filename)
+    Returns:
+        dict: The secrets .json loaded as a dictionary
+    """
 
-    for path in paths:
-        try:
-            blob = bucket.bucket.blob(path)
-            blob.upload_from_filename(data)
-        except Exception as error:
-            print(error)
+    secret_folder = Path("/secrets")
+
+    #: Try to get the secrets from the Cloud Function mount point
+    if secret_folder.exists():
+        return json.loads(Path("/secrets/app/secrets.json").read_text(encoding="utf-8"))
+
+    #: Otherwise, try to load a local copy for local development
+    secret_folder = Path(__file__).parent / "secrets"
+    if secret_folder.exists():
+        return json.loads((secret_folder / "secrets.json").read_text(encoding="utf-8"))
+
+    raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
 def write_to_bucket(bucket, item_id, filename, data, needs_weekly_backup):
-    base_path = Path(f"./temp/{bucket}")
-    paths = [base_path / "short" / item_id / filename]
+    bucket_name = get_secrets()["BUCKET_NAME"]
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
+
+    paths = [f"short/{item_id}/{filename}"]
 
     if needs_weekly_backup:
-        paths.append(base_path / "long" / item_id / filename)
+        paths.append(f"long/{item_id}/{filename}")
 
     for path in paths:
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        with open(path, "w") as f:
-            json.dump(data, f)
-
-
-def delete_folder(pth):
-    if not pth.exists():
-        return
-
-    for sub in pth.iterdir():
-        if sub.is_dir():
-            delete_folder(sub)
-        else:
-            sub.unlink()
-    pth.rmdir()
+        blob = bucket.blob(path)
+        blob.upload_from_string(json.dumps(data))
