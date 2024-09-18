@@ -6,14 +6,15 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "check": "tsc -b",
-    "dev": "run-p dev:*",
-    "dev:firebase": "firebase emulators:start --import .emulator-data --only functions,storage,firestore,auth --export-on-exit",
+    "dev:firebase": "firebase emulators:start --import .emulator-data --only functions,storage,firestore,auth",
     "dev:vite": "vite",
+    "dev": "run-p dev:*",
+    "save-firebase-state": "firebase emulators:start --import .emulator-data --only functions,storage,firestore,auth --export-on-exit",
     "format": "prettier . --write",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "npm run dev",
     "start:ci": "vite --host",
+    "start": "npm run dev",
     "test": "vitest"
   },
   "browserslist": {
