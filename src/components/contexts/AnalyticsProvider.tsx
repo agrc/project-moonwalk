@@ -10,7 +10,7 @@ type AnalyticsProviderProps = {
 };
 
 export function AnalyticsProvider(props: AnalyticsProviderProps) {
-  const app = useFirebaseApp();
+  const { app } = useFirebaseApp();
   const sdk = getAnalytics(app);
 
   // is this causing unnecessary re-renders?

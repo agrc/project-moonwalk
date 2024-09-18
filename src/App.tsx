@@ -1,12 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
 import { Drawer, Footer, Header, SocialMedia, UgrcLogo } from '@ugrc/utah-design-system';
+import { collection, getDocs } from 'firebase/firestore';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import { BackupItem } from './components/BackupItem';
-import { BackupSchedule } from './components/BackupSchedule';
-// import { useFirebaseApp } from './components/contexts';
-import { moonlight, MoonlightBackup } from './components/data/moonlight';
+import { useFirebaseApp } from './components/contexts';
+import { MoonlightBackup } from './components/data/moonlight';
 
 const version = import.meta.env.PACKAGE_VERSION;
 
@@ -43,7 +44,6 @@ const links = [
 ];
 
 export default function App() {
-  // const app = useFirebaseApp();
   const sideBarState = useOverlayTriggerState({});
   const sideBarTriggerProps = useOverlayTrigger(
     {
@@ -59,6 +59,23 @@ export default function App() {
     trayState,
   );
   const [selected, setSelected] = useState<MoonlightBackup | undefined>();
+
+  const { firestore } = useFirebaseApp();
+  const getMoonlightData = async () => {
+    const snapshot = await getDocs(collection(firestore, 'items'));
+
+    return snapshot.docs.map((doc) => {
+      return {
+        ...doc.data(),
+        itemId: doc.id,
+      } as MoonlightBackup;
+    });
+  };
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['moonlight'],
+    queryFn: getMoonlightData,
+  });
 
   return (
     <>
@@ -76,24 +93,25 @@ export default function App() {
             <div className="mx-2 mb-2 grid grid-cols-1 gap-2">
               <h2 className="text-xl font-bold">Available restore points</h2>
               <div className="flex flex-col gap-4 rounded border border-zinc-200 p-3 dark:border-zinc-700">
-                {selected && (
+                {/* {selected && (
                   <BackupSchedule shortSchedule={selected.shortSchedule} longSchedule={selected.longSchedule} />
-                )}
+                )} */}
               </div>
             </div>
           </Drawer>
           <div className="relative flex flex-1 flex-col rounded border border-b-0 border-zinc-200 dark:border-0 dark:border-zinc-700">
             <div className="relative flex-1 space-y-2 overflow-y-scroll px-2 py-1.5 dark:rounded">
-              {moonlight.items.map((item: MoonlightBackup, i) => (
-                <BackupItem
-                  key={i}
-                  moonlight={item}
-                  select={(item) => {
-                    setSelected(item);
-                    sideBarState.open();
-                  }}
-                />
-              ))}
+              {!isPending &&
+                data?.map((item: MoonlightBackup, i) => (
+                  <BackupItem
+                    key={i}
+                    moonlight={item}
+                    select={(item) => {
+                      setSelected(item);
+                      sideBarState.open();
+                    }}
+                  />
+                ))}
               <Drawer
                 type="tray"
                 className="shadow-inner dark:shadow-white/20"
