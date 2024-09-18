@@ -26,3 +26,7 @@ yarn-error.log*
 # deploy
 /.firebase
 /public/assets
+
+# emulators
+.emulator-data/
+*-debug.log
