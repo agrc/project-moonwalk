@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
-    "@ugrc/utah-design-system": "^1.9.1",
+    "@ugrc/utah-design-system": "^1.9.4",
     "firebase": "^10.13.1",
     "ky": "^1.7.2",
     "lodash.startcase": "^4.4.0",
