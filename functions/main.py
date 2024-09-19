@@ -1,38 +1,20 @@
 import json
-from pathlib import Path
 
 import arcgis
 from firebase_admin import initialize_app
 from firebase_functions import https_fn
+from google.cloud import storage
 
+from utilities import UnzipData, get_secrets
+
+STORAGE_CLIENT = storage.Client()
 UPLOAD_ITEM_TITLE = "moonwalk-restore"
 
 initialize_app()
 
-
-def _get_secrets():
-    """A helper method for loading secrets from either a GCF mount point or a local secrets folder.
-    json file
-
-    Raises:
-        FileNotFoundError: If the secrets file can't be found.
-
-    Returns:
-        dict: The secrets .json loaded as a dictionary
-    """
-
-    secret_folder = Path("/secrets")
-
-    #: Try to get the secrets from the Cloud Function mount point
-    if secret_folder.exists():
-        return json.loads(Path("/secrets/app/secrets.json").read_text(encoding="utf-8"))
-
-    #: Otherwise, try to load a local copy for local development
-    secret_folder = Path(__file__).parent / "secrets"
-    if secret_folder.exists():
-        return json.loads((secret_folder / "secrets.json").read_text(encoding="utf-8"))
-
-    raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
+secrets = get_secrets()
+bucket_name = secrets["BUCKET_NAME"]
+bucket = STORAGE_CLIENT.bucket(bucket_name)
 
 
 def cleanup_restores(gis):
@@ -42,41 +24,44 @@ def cleanup_restores(gis):
         item.delete(permanent=True)
 
 
-def truncate_and_append(item_id, sub_folder, gis, item):
-    fgdb_item = upload_fgdb(item_id, sub_folder, gis)
+def truncate_and_append(item_id, category, generation, item):
+    category_path = f"{category}/{item_id}/upload.zip"
+    blob = bucket.blob(category_path, generation=generation)
 
-    collection = arcgis.features.FeatureLayerCollection.fromitem(item)
+    with UnzipData(blob) as (_, _, data_zip):
+        fgdb_item = upload_fgdb(data_zip)
 
-    for layer in collection.layers:
-        print(f"truncating layer: {layer.properties.name}")
-        layer.manager.truncate(asynchronous=True, wait=True)
-        print("appending")
-        layer.append(
-            item_id=fgdb_item.id,
-            upload_format="filegdb",
-            source_table_name=layer.properties.name,
-            return_messages=True,
-            rollback=True,
-        )
+        collection = arcgis.features.FeatureLayerCollection.fromitem(item)
 
-    for table in collection.tables:
-        print(f"truncating table: {table.properties.name}")
-        table.manager.truncate(asynchronous=True, wait=True)
-        print("appending")
-        table.append(
-            item_id=fgdb_item.id,
-            upload_format="filegdb",
-            source_table_name=table.properties.name,
-            return_messages=True,
-            rollback=True,
-        )
+        for layer in collection.layers:
+            print(f"truncating layer: {layer.properties.name}")
+            layer.manager.truncate(asynchronous=True, wait=True)
+            print("appending")
+            layer.append(
+                item_id=fgdb_item.id,
+                upload_format="filegdb",
+                source_table_name=layer.properties.name,
+                return_messages=True,
+                rollback=True,
+            )
 
-    fgdb_item.delete(permanent=True)
+        for table in collection.tables:
+            print(f"truncating table: {table.properties.name}")
+            table.manager.truncate(asynchronous=True, wait=True)
+            print("appending")
+            table.append(
+                item_id=fgdb_item.id,
+                upload_format="filegdb",
+                source_table_name=table.properties.name,
+                return_messages=True,
+                rollback=True,
+            )
+
+        fgdb_item.delete(permanent=True)
 
 
-def upload_fgdb(item_id, sub_folder, gis):
+def upload_fgdb(zip_path):
     print("uploading fgdb")
-    zip_path = Path(f"./temp/sample-bucket/{sub_folder}/{item_id}/data.zip")
     fgdb_item = gis.content.add(
         item_properties={
             "type": "File Geodatabase",
@@ -89,79 +74,83 @@ def upload_fgdb(item_id, sub_folder, gis):
     return fgdb_item
 
 
-def recreate_item(item_id, sub_folder, gis):
+def recreate_item(item_id, category, generation):
     print("Item not found; creating new item...")
 
-    fgdb_item = upload_fgdb(item_id, sub_folder, gis)
+    category_path = f"{category}/{item_id}/upload.zip"
+    blob = bucket.blob(category_path, generation=generation)
 
-    original_item_properties = json.loads(
-        Path(f"./temp/sample-bucket/{sub_folder}/{item_id}/item.json").read_text(encoding="utf-8")
-    )
+    with UnzipData(blob) as (item_json, _, data_zip):
+        fgdb_item = upload_fgdb(data_zip)
 
-    print("publishing")
-    #: todo: should we worry about restoring layer ids?
-    published_item = fgdb_item.publish(
-        publish_parameters={"name": original_item_properties.get("name")},
-    )
-    success = published_item.reassign_to(
-        target_owner=original_item_properties.get("owner"),
-        target_folder=original_item_properties.get("ownerFolder"),
-    )
-    if not success:
-        raise Exception("Failed to reassign item")
+        print("publishing")
+        #: todo: should we worry about restoring layer ids?
+        published_item = fgdb_item.publish(
+            publish_parameters={"name": item_json.get("name")},
+        )
+        success = published_item.reassign_to(
+            target_owner=item_json.get("owner"),
+            target_folder=item_json.get("ownerFolder"),
+        )
+        if not success:
+            raise Exception("Failed to reassign item")
 
-        #: sharing
-    published_item.sharing.sharing_level = original_item_properties.get("access")
-    #: todo: group sharing...
+            #: sharing
+        published_item.sharing.sharing_level = item_json.get("access")
+        #: todo: group sharing...
 
-    print("updating item")
-    supported_property_names = [
-        "description",
-        "title",
-        "tags",
-        "snippet",
-        "extent",
-        "accessInformation",
-        "licenseInfo",
-        "culture",
-        "access",
-    ]
-    supported_properties = {k: v for k, v in original_item_properties.items() if k in supported_property_names}
-    success = published_item.update(
-        item_properties=supported_properties,
-    )
-    #: metadata?
+        #: todo: refactor this into a separate function and use in truncate_and_append
+        print("updating item")
+        #: todo: Sam from Esri recommends looking at what properties are sent when you edit an item in AGOL to see what is supported
+        supported_property_names = [
+            "description",
+            "title",
+            "tags",
+            "snippet",
+            "extent",
+            "accessInformation",
+            "licenseInfo",
+            "culture",
+            "access",
+        ]
+        supported_properties = {k: v for k, v in item_json.items() if k in supported_property_names}
+        success = published_item.update(
+            item_properties=supported_properties,
+        )
+        #: metadata?
 
-    print("deleting fgdb")
-    #: get a new item reference since the owner has changed
-    gis.content.get(fgdb_item.id).delete(permanent=True)
+        print("deleting fgdb")
+        #: get a new item reference since the owner has changed
+        gis.content.get(fgdb_item.id).delete(permanent=True)
 
-    if not success:
-        raise Exception("Failed to update item")
+        if not success:
+            raise Exception("Failed to update item")
 
-    print(f"new item created: {published_item.id}")
+        print(f"new item created: {published_item.id}")
 
     return published_item.id
 
 
-@https_fn.on_request()
-def restore(request: https_fn.Request) -> https_fn.Response:
-    item_id = request.args.get("item_id")
-    sub_folder = request.args.get("sub_folder")
+@https_fn.on_call()
+def restore(request: https_fn.CallableRequest) -> str:
+    print("begin request")
+    item_id = request.data.get("item_id")
+    category = request.data.get("category")
+    generation = request.data.get("generation")
+    print(",".join(request.data.keys()))
 
-    if not item_id or not sub_folder:
-        return https_fn.Response("Missing required parameters", status=400)
+    if not item_id or not category or not generation:
+        raise https_fn.HttpsError("invalid-argument", "Missing required arguments")
 
-    secrets = _get_secrets()
+    print("logging into AGOL")
     gis = arcgis.GIS(
         url=secrets["AGOL_ORG"],
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
     )
-
     cleanup_restores(gis)
 
-    print(f"Restoring {item_id} from {sub_folder}...")
+    print(f"Restoring {item_id} from {category} ({generation})...")
 
     item_exists = True
     try:
@@ -171,23 +160,23 @@ def restore(request: https_fn.Request) -> https_fn.Response:
 
     if item_exists:
         if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
-            truncate_and_append(item_id, sub_folder, gis, item)
+            truncate_and_append(item_id, category, generation, item)
 
-            return https_fn.Response("Item restored successfully via truncate and append")
+            return "Item restored successfully via truncate and append"
         else:
-            raise NotImplementedError(f"Unsupported item type: {item.type}")
+            raise https_fn.HttpsError("invalid-argument", f"Unsupported item type: {item.type}")
             #: this breaks web maps and experience builder projects, not sure why
-            # print(f"overwriting item: {item_id} from {sub_folder}")
+            # print(f"overwriting item: {item_id} from {category}")
             # success = item.update(
             #     item_properties=json.loads(
-            #         Path(f"./temp/sample-bucket/{item_id}/{sub_folder}/item.json").read_text(encoding="utf-8")
+            #         Path(f"./temp/sample-bucket/{item_id}/{category}/item.json").read_text(encoding="utf-8")
             #     ),
-            #     data=str(Path(f"./temp/sample-bucket/{item_id}/{sub_folder}/data.json")),
+            #     data=str(Path(f"./temp/sample-bucket/{item_id}/{category}/data.json")),
             # )
             # if not success:
             #     print("Failed to update item")
             #     return
     else:
-        new_id = recreate_item(item_id, sub_folder, gis)
+        new_id = recreate_item(item_id, category, generation)
 
-        return https_fn.Response(f"Item restored successfully via recreation. New Item ID: {new_id}")
+        return f"Item restored successfully via recreation. New Item ID: {new_id}"

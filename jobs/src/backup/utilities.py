@@ -1,6 +1,7 @@
 import json
 from os import getenv
 from pathlib import Path
+from zipfile import ZipFile
 
 from google.cloud import firestore, storage
 
@@ -36,23 +37,58 @@ def get_secrets():
     raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
-def write_to_bucket(bucket, item_id, filename, data, needs_weekly_backup):
+def write_to_bucket(item_id, filename, path, needs_weekly_backup):
     bucket_name = get_secrets()["BUCKET_NAME"]
     bucket = STORAGE_CLIENT.bucket(bucket_name)
 
-    paths = [f"short/{item_id}/{filename}"]
+    category_path = f"short/{item_id}/{filename}"
 
     if needs_weekly_backup:
-        paths.append(f"long/{item_id}/{filename}")
+        category_path = f"long/{item_id}/{filename}"
 
-    for path in paths:
-        blob = bucket.blob(path)
-        blob.upload_from_string(json.dumps(data))
+    blob = bucket.blob(category_path)
+    blob.upload_from_filename(path)
+
+    #: cleanup
+    Path(path).unlink()
+
+
+def get_versions(item_id):
+    bucket_name = get_secrets()["BUCKET_NAME"]
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
+
+    #: get versions of this blog
+    glob = f"**/{item_id}/backup.zip"
+    version_blobs = bucket.list_blobs(match_glob=glob, versions=True)
+
+    versions = [
+        {
+            "category": Path(blob.name).parts[0],
+            "generation": blob.generation,
+            "updated": blob.updated,
+        }
+        for blob in version_blobs
+    ]
+
+    versions.sort(key=lambda x: x["updated"], reverse=True)
+
+    return versions
 
 
 def write_to_firestore(item_id, item_name, date):
     print("writing to firestore")
     ref = FIRESTORE_CLIENT.collection("items").document(item_id)
-    result = ref.set({"name": item_name, "lastBackup": date})
+    data = {
+        "name": item_name,
+        "lastBackup": date,
+        "versions": get_versions(item_id),
+    }
+    ref.set(data)
 
-    print(result)
+    return data
+
+
+def add_to_zip(zip, items):
+    with ZipFile(zip, "w") as zipped_file:
+        for name, data in items:
+            zipped_file.writestr(name, data)

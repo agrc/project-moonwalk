@@ -6,8 +6,9 @@ import { useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import { BackupItem } from './components/BackupItem';
+import { BackupSchedule } from './components/BackupSchedule';
 import { useFirebaseApp } from './components/contexts';
-import { MoonlightBackup } from './components/data/moonlight';
+import { MoonwalkBackup } from './components/types';
 
 const version = import.meta.env.PACKAGE_VERSION;
 
@@ -58,23 +59,23 @@ export default function App() {
     },
     trayState,
   );
-  const [selected, setSelected] = useState<MoonlightBackup | undefined>();
+  const [selected, setSelected] = useState<MoonwalkBackup | undefined>();
 
   const { firestore } = useFirebaseApp();
-  const getMoonlightData = async () => {
+  const getMoonwalkData = async () => {
     const snapshot = await getDocs(collection(firestore, 'items'));
 
     return snapshot.docs.map((doc) => {
       return {
         ...doc.data(),
         itemId: doc.id,
-      } as MoonlightBackup;
+      } as MoonwalkBackup;
     });
   };
 
   const { isPending, error, data } = useQuery({
-    queryKey: ['moonlight'],
-    queryFn: getMoonlightData,
+    queryKey: ['moonwalk'],
+    queryFn: getMoonwalkData,
   });
 
   return (
@@ -93,19 +94,17 @@ export default function App() {
             <div className="mx-2 mb-2 grid grid-cols-1 gap-2">
               <h2 className="text-xl font-bold">Available restore points</h2>
               <div className="flex flex-col gap-4 rounded border border-zinc-200 p-3 dark:border-zinc-700">
-                {/* {selected && (
-                  <BackupSchedule shortSchedule={selected.shortSchedule} longSchedule={selected.longSchedule} />
-                )} */}
+                {selected && <BackupSchedule item={selected} />}
               </div>
             </div>
           </Drawer>
           <div className="relative flex flex-1 flex-col rounded border border-b-0 border-zinc-200 dark:border-0 dark:border-zinc-700">
             <div className="relative flex-1 space-y-2 overflow-y-scroll px-2 py-1.5 dark:rounded">
               {!isPending &&
-                data?.map((item: MoonlightBackup, i) => (
+                data?.map((item: MoonwalkBackup, i) => (
                   <BackupItem
                     key={i}
-                    moonlight={item}
+                    moonwalk={item}
                     select={(item) => {
                       setSelected(item);
                       sideBarState.open();

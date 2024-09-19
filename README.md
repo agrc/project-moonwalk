@@ -20,3 +20,9 @@ The restore service consists of a website that allows you to view your backups a
 1. conda activate moonwalk-backup
 1. cd jobs/backup
 1. pip install -e ".[tests]"
+
+Enable versioning on the emulator bucket:
+
+```bash
+gcloud storage buckets update gs://ut-dts-agrc-moonwalk-dev.appspot.com --versioning
+```
