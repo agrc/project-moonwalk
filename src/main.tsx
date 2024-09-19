@@ -15,8 +15,8 @@ let firebaseConfig = {
   measurementId: '',
 };
 
-if (import.meta.env.VITE_FIREBASE) {
-  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE);
+if (import.meta.env.VITE_FIREBASE_CONFIG) {
+  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 }
 
 const queryClient = new QueryClient();

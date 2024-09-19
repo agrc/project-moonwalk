@@ -4,6 +4,7 @@
 # testing
 /coverage
 /temp
+.coverage
 
 # production
 /build

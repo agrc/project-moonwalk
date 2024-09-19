@@ -1,4 +1,5 @@
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 from os import getenv
 from pprint import pprint
 
@@ -7,7 +8,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from utilities import get_secrets, write_to_bucket, write_to_firestore  # noqa: E402
+try:
+    from .utilities import add_to_zip, get_secrets, write_to_bucket, write_to_firestore  # noqa: E402
+except ImportError:
+    from utilities import (  # type: ignore
+        add_to_zip,  # noqa: E402
+        get_secrets,
+        write_to_bucket,
+        write_to_firestore,
+    )
 
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
 # NEEDS_WEEKLY_BACKUP = True
@@ -60,16 +69,7 @@ def backup():
                 continue
 
             print(f"Preparing {item.title} ({item.type}, {item.id})")
-            item_json = dict(item)
-
-            versions = write_to_bucket("sample-bucket", item.id, "item.json", item_json, NEEDS_WEEKLY_BACKUP)
-            versions = write_to_bucket("sample-bucket", item.id, "data.json", item.get_data(), NEEDS_WEEKLY_BACKUP)
-
-            summary[item.id] = {
-                "title": item.title,
-                "versions": versions,
-                "type": item.type,
-            }
+            zip_filename = "backup.zip"
 
             if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
                 try:
@@ -83,15 +83,25 @@ def backup():
                     )
 
                     print("Downloading exported item...")
-                    export_item.download(save_path=f"./temp/sample-bucket/short/{item.id}", file_name="data.zip")
+                    download_path = export_item.download(file_name=zip_filename)
 
-                    write_to_firestore(item.id, item.title, datetime.now().isoformat())
+                    #: clean up
+                    export_item.delete(permanent=True)
+
                 except Exception as error:
                     print(error)
                     print(
                         f"Failed to export and download {export_item.title} ({export_item.id}), {export_item.status()}"
                     )
-                export_item.delete(permanent=True)
+
+            item_json = dict(item)
+            add_to_zip(
+                download_path, [("item.json", json.dumps(item_json)), ("data.json", json.dumps(item.get_data()))]
+            )
+
+            write_to_bucket(item.id, zip_filename, download_path, NEEDS_WEEKLY_BACKUP)
+
+            summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
