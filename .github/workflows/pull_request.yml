@@ -73,13 +73,20 @@ jobs:
       name: dev
 
     steps:
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: ./functions/requirements.txt
+
       - name: 🚀 Deploy Firebase
         uses: agrc/firebase-website-deploy-composite-action@v1
         with:
           identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
           service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project-id: ${{ secrets.PROJECT_ID }}
-          prebuild-command: cd functions && python3.11 -m venv venv
+          prebuild-command: cd functions && python -m venv venv
           build-command: npm run build
           preview: true
         env:
