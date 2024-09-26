@@ -67,12 +67,17 @@ jobs:
   deploy-preview:
     name: Firebase preview
     runs-on: ubuntu-latest
-    needs: [test-unit-ui]
+    needs: [test-unit-ui, test-unit-python]
     if: ${{ github.event.sender.type == 'User' }}
     environment:
       name: dev
 
     steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
       - name: 🐍 Setup Python
         uses: actions/setup-python@v2
         with:
