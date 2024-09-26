@@ -79,7 +79,7 @@ jobs:
           show-progress: false
 
       - name: 🐍 Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
@@ -91,7 +91,7 @@ jobs:
           identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
           service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project-id: ${{ secrets.PROJECT_ID }}
-          prebuild-command: cd functions && python -m venv venv
+          prebuild-command: cd functions && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
           build-command: npm run build
           preview: true
         env:
