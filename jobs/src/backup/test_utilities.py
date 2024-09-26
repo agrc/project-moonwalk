@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 from zipfile import ZipFile
 
-from backup import utilities
+import utilities
 
 
 def test_add_to_zip():
