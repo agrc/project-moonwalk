@@ -80,5 +80,6 @@ jobs:
           service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project-id: ${{ secrets.PROJECT_ID }}
           build-command: npm run build
+          preview: true
         env:
           VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
