@@ -111,6 +111,7 @@ export default function App() {
                     }}
                   />
                 ))}
+              {error && <ErrorFallback error={error} />}
               <Drawer
                 type="tray"
                 className="shadow-inner dark:shadow-white/20"
