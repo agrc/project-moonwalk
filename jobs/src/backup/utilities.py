@@ -5,11 +5,12 @@ from zipfile import ZipFile
 
 from google.cloud import firestore, storage
 
-STORAGE_CLIENT = storage.Client()
-project = None
-if getenv("FIRESTORE_EMULATOR_HOST"):
-    project = "ut-dts-agrc-moonwalk-dev"
-FIRESTORE_CLIENT = firestore.Client(project)
+if not getenv("CI"):
+    STORAGE_CLIENT = storage.Client()
+    project = None
+    if getenv("FIRESTORE_EMULATOR_HOST"):
+        project = "ut-dts-agrc-moonwalk-dev"
+    FIRESTORE_CLIENT = firestore.Client(project)
 
 
 def get_secrets():
