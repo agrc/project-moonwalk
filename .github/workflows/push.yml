@@ -49,3 +49,103 @@ jobs:
           build-command: npm run build -- --mode dev
         env:
           VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+
+  deploy-python-dev:
+    name: Deploy python to staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    environment:
+      name: dev
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: 'access_token'
+
+      - name: 🐳 Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v3
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            type=ref,suffix=-{{sha}},event=branch
+            type=ref,prefix=pr-,suffix=-{{sha}},event=pr
+            type=semver,pattern={{version}}
+            latest
+
+      - name: 📦 Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          builder: ${{ steps.builder.outputs.name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          context: .
+          file: ./Dockerfile
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🚀 Deploy to Cloud Run Job
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          project_id: secrets.PROJECT_ID
+          region: us-central1
+          image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
+          job: default
+          secrets: /secrets/app/secrets.json=skid-secrets:latest
+          timeout: 3h
+          flags: >
+            '--cpu=1
+            --memory=3Gi
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+            --timeout=3h
+            --max-instances=1
+            --max-retries=0
+            --parallelism=0'
+
+      - name: 🕰️ Create Cloud Scheduler
+        run: |
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
+            gcloud scheduler jobs create http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
+              --schedule="0 3 * * 6" \
+              --time-zone=America/Denver \
+              --location=us-central1 \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
+              --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          else
+            gcloud scheduler jobs update http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
+              --schedule="0 3 * * 6" \
+              --time-zone=America/Denver \
+              --location=us-central1 \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
+              --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          fi
