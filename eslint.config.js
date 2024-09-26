@@ -48,7 +48,9 @@ export default tseslint.config(
       'node_modules/*',
       'package-lock.json',
       'public/*',
-      'scripts/*',
+      'functions/*',
+      'jobs/*',
+      'firebase-export-*',
     ],
   },
 );
