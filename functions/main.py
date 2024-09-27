@@ -2,7 +2,7 @@ from os import getenv
 
 import arcgis
 from firebase_admin import initialize_app
-from firebase_functions import https_fn
+from firebase_functions import https_fn, options
 from google.cloud import storage
 
 from utilities import UnzipData, get_secrets
@@ -134,7 +134,7 @@ def recreate_item(item_id, category, generation):
     return published_item.id
 
 
-@https_fn.on_call()
+@https_fn.on_call(memory=options.MemoryOption.MB_512)
 def restore(request: https_fn.CallableRequest) -> str:
     print("begin request")
     item_id = request.data.get("item_id")
