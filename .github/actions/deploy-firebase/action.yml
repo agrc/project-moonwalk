@@ -34,6 +34,13 @@ runs:
         cache: pip
         cache-dependency-path: ./functions/requirements.txt
 
+    # this is a requirement for the arcgis package: https://github.com/Esri/arcgis-python-api/issues/1299#issuecomment-1185375010
+    - name: Install libkrb5 for Kerberos
+      shell: bash
+      run: |
+        sudo apt install -y libkrb5-dev
+        pip install requests-kerberos
+
     - name: 🚀 Deploy Firebase
       uses: agrc/firebase-website-deploy-composite-action@v1
       with:
