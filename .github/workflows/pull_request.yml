@@ -64,7 +64,7 @@ jobs:
       - name: 🔍 Lint
         run: npm run lint
 
-  deploy-preview:
+  deploy-firebase-preview:
     name: Firebase preview
     runs-on: ubuntu-latest
     needs: [test-unit-ui, test-unit-python]
@@ -73,26 +73,18 @@ jobs:
       name: dev
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Set up code
         uses: actions/checkout@v4
         with:
           show-progress: false
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
+      - name: 🚀 Deploy Firebase project to preview
+        uses: ./.github/actions/deploy
         with:
-          python-version: '3.11'
-          cache: pip
-          cache-dependency-path: ./functions/requirements.txt
-
-      - name: 🚀 Deploy Firebase
-        uses: agrc/firebase-website-deploy-composite-action@v1
-        with:
-          identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          project-id: ${{ secrets.PROJECT_ID }}
-          prebuild-command: cd functions && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
-          build-command: npm run build
-          preview: true
-        env:
-          VITE_FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+          identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          firebase_config: ${{ secrets.FIREBASE_CONFIG }}
+          preview: 'yes'
+          build_command: npm run build -- --mode dev
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
