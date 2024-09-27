@@ -1,4 +1,4 @@
-import json
+from os import getenv
 
 import arcgis
 from firebase_admin import initialize_app
@@ -7,14 +7,17 @@ from google.cloud import storage
 
 from utilities import UnzipData, get_secrets
 
-STORAGE_CLIENT = storage.Client()
-UPLOAD_ITEM_TITLE = "moonwalk-restore"
+try:
+    STORAGE_CLIENT = storage.Client()
+    UPLOAD_ITEM_TITLE = "moonwalk-restore"
 
-initialize_app()
+    initialize_app()
 
-secrets = get_secrets()
-bucket_name = secrets["BUCKET_NAME"]
-bucket = STORAGE_CLIENT.bucket(bucket_name)
+    secrets = get_secrets()
+    bucket_name = secrets["BUCKET_NAME"]
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
+except Exception:
+    print("failed to initialize firebase app or clients")
 
 
 def cleanup_restores(gis):
