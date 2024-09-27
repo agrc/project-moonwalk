@@ -33,7 +33,7 @@ def cleanup_exports(gis):
 def backup():
     secrets = get_secrets()
 
-    gis = arcgis.GIS(
+    gis = arcgis.gis.GIS(
         url=getenv("AGOL_ORG"),
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
