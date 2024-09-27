@@ -33,6 +33,8 @@ jobs:
           identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          agol_org: ${{ vars.AGOL_ORG }}
+          tag_name: ${{ vars.TAG_NAME }}
 
   deploy-firebase-prod:
     name: Deploy Firebase project to production
