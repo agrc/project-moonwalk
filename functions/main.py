@@ -146,7 +146,7 @@ def restore(request: https_fn.CallableRequest) -> str:
         raise https_fn.HttpsError("invalid-argument", "Missing required arguments")
 
     print("logging into AGOL")
-    gis = arcgis.GIS(
+    gis = arcgis.gis.GIS(
         url=secrets["AGOL_ORG"],
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
