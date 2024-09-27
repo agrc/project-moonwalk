@@ -5,13 +5,10 @@ setup.py
 A module that installs the backup process as a module
 """
 
-from glob import glob
-from os.path import basename, splitext
-
 from setuptools import find_packages, setup
 
 setup(
-    name="moonwalk-backup",
+    name="backup",
     version="1.0.0",
     license="MIT",
     description="Backup process for project moonwalk",
@@ -20,7 +17,6 @@ setup(
     url="https://github.com/agrc/project-moonwalk",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
     zip_safe=True,
     classifiers=[
