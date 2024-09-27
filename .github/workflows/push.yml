@@ -79,3 +79,5 @@ jobs:
           service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           pause_schedule_job: 'yes'
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          agol_org: ${{ vars.AGOL_ORG }}
+          tag_name: ${{ vars.TAG_NAME }}
