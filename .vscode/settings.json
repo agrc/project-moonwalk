@@ -6,8 +6,10 @@
     "fromitem",
     "instafail",
     "orgid",
+    "prebuild",
     "tanstack",
-    "venv"
+    "venv",
+    "VITE"
   ],
   "editor.formatOnSave": true,
   "editor.rulers": [120],
