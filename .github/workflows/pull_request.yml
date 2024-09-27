@@ -79,7 +79,7 @@ jobs:
           show-progress: false
 
       - name: 🚀 Deploy Firebase project to preview
-        uses: ./.github/actions/deploy
+        uses: ./.github/actions/deploy-firebase
         with:
           identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
