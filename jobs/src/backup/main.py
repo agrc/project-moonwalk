@@ -47,11 +47,11 @@ def backup():
     summary = {}
     supported_types = [
         arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value,
-        # restoring some of these types below just broken them. Perhaps these can be implemented in the future...
-        # arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
-        # arcgis.gis.ItemTypeEnum.WEB_MAP.value,
-        # arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
-        # arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
+        # restoring some of these types below just broken them.
+        arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
+        arcgis.gis.ItemTypeEnum.WEB_MAP.value,
+        arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
+        arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
     ]
 
     while has_more:
