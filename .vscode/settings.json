@@ -1,9 +1,13 @@
 {
   "cSpell.words": [
+    "accesstoken",
     "appspot",
+    "Buildx",
+    "cloudrun",
     "dotenv",
     "firestore",
     "fromitem",
+    "gserviceaccount",
     "instafail",
     "orgid",
     "prebuild",

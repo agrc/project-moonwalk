@@ -9,10 +9,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-python-prod:
+  deploy-cloudrun-prod:
     name: Deploy python production
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref_name == 'main'
     environment:
       name: prod
     permissions:
@@ -20,102 +20,19 @@ jobs:
       contents: read
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Set up code
         uses: actions/checkout@v4
         with:
           show-progress: false
 
-      - name: 🗝️ Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
+      - name: 🚀 Deploy
+        uses: ./.github/actions/deploy-cloudrun
+        timeout-minutes: 15
         with:
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          token_format: 'access_token'
-
-      - name: 🐳 Set up Docker Buildx
-        id: builder
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🗝️ Authenticate Docker to Google Cloud
-        uses: docker/login-action@v3
-        with:
-          registry: us-central1-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: 🏷️ Extract tags from GitHub
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
-          tags: |
-            type=ref,suffix=-{{sha}},event=branch
-            type=ref,prefix=pr-,suffix=-{{sha}},event=pr
-            type=semver,pattern={{version}}
-            latest
-
-      - name: 📦 Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          builder: ${{ steps.builder.outputs.name }}
-          tags: ${{ steps.meta.outputs.tags }}
-          context: .
-          file: ./Dockerfile
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          provenance: false
-
-      - name: ☁️ Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: 🚀 Deploy to Cloud Run Job
-        run: |
-          if [ ! "$(gcloud run jobs list | grep default)" ]; then
-            gcloud run jobs create default \
-              --region us-central1 \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=3Gi \
-              --cpu=1 \
-              --max-retries 0 \
-              --parallelism 0 \
-              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
-              --task-timeout 3h
-          else
-            gcloud run jobs update default \
-              --region us-central1 \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=3Gi \
-              --cpu=1 \
-              --max-retries 0 \
-              --parallelism 0 \
-              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
-              --task-timeout 3h
-          fi
-
-      - name: 🕰️ Create Cloud Scheduler
-        run: |
-          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
-          gcloud scheduler jobs create http saturday-evening \
-            --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-            --schedule="0 3 * * 6" \
-            --time-zone=America/Denver \
-            --location=us-central1 \
-            --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
-            --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          else
-            gcloud scheduler jobs update http saturday-evening \
-              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-              --schedule="0 3 * * 6" \
-              --time-zone=America/Denver \
-              --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
-              --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          fi
+          project_id: ${{ secrets.PROJECT_ID }}
+          identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-firebase-prod:
     name: Deploy Firebase project to production
