@@ -10,9 +10,8 @@ concurrency:
 
 jobs:
   deploy-cloudrun-prod:
-    name: Deploy python production
+    name: Deploy Cloudrun to production
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
     environment:
       name: prod
     permissions:
@@ -42,7 +41,6 @@ jobs:
     environment:
       name: prod
       url: https://ut-dts-agrc-moonwalk-prod.web.app/
-    if: github.event.release.prerelease == false
 
     steps:
       - name: ⬇️ Set up code
