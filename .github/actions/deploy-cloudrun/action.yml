@@ -88,6 +88,7 @@ runs:
         timeout: 60m
         secrets: |
           /secrets/app/secrets.json=SECRETS:latest
+        secrets_update_strategy: overwrite
         env_vars: |-
           AGOL_ORG=${{ inputs.agol_org }}
           TAG_NAME=${{ inputs.tag_name }}
