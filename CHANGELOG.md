@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/agrc/project-moonwalk/compare/v1.0.1...v1.0.2) (2024-10-01)
+
+
+### Bug Fixes
+
+* make release (prod) deploys match push (dev) deploys ([8f09e22](https://github.com/agrc/project-moonwalk/commit/8f09e225ca27b86816356613302b3be8d4c6c962))
+
 ## [1.0.1](https://github.com/agrc/project-moonwalk/compare/v1.0.0...v1.0.1) (2024-10-01)
 
 
