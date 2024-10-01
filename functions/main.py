@@ -133,7 +133,7 @@ def recreate_item(item_id, category, generation, gis):
     return published_item.id
 
 
-SECRETS = SecretParam("secrets")
+SECRETS = SecretParam("SECRETS")
 
 
 @https_fn.on_call(memory=options.MemoryOption.MB_512, secrets=[SECRETS])
