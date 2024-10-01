@@ -85,7 +85,7 @@ runs:
       with:
         job: ${{ steps.globals.outputs.JOB_NAME }}
         image: us-central1-docker.pkg.dev/${{ inputs.project_id }}/images/job:latest
-        timeout: 60m
+        timeout: 20m
         secrets: |
           /secrets/app/secrets.json=SECRETS:latest
         secrets_update_strategy: overwrite
@@ -95,6 +95,9 @@ runs:
         flags: |
           --memory=512Mi
           --service-account=cloud-run-sa@${{ inputs.project_id }}.iam.gserviceaccount.com
+          --max-retries=1
+          --task-timeout=60m
+          --parallelism=1
 
     - name: 🕰️ Create Main Cloud Scheduler
       shell: bash
