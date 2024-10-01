@@ -1,7 +1,8 @@
+from os import environ
+
 import arcgis
 from firebase_admin import initialize_app
 from firebase_functions import https_fn, options
-from firebase_functions.params import SecretParam
 from google.cloud import storage
 
 from utilities import UnzipData, get_secrets
@@ -12,9 +13,6 @@ try:
 
     initialize_app()
 
-    secrets = get_secrets()
-    bucket_name = secrets["BUCKET_NAME"]
-    bucket = STORAGE_CLIENT.bucket(bucket_name)
 except Exception:
     print("failed to initialize firebase app or clients")
 
@@ -26,7 +24,7 @@ def cleanup_restores(gis):
         item.delete(permanent=True)
 
 
-def truncate_and_append(item_id, category, generation, item, gis):
+def truncate_and_append(item_id, category, generation, item, gis, bucket):
     category_path = f"{category}/{item_id}/upload.zip"
     blob = bucket.blob(category_path, generation=generation)
 
@@ -76,7 +74,7 @@ def upload_fgdb(zip_path, gis):
     return fgdb_item
 
 
-def recreate_item(item_id, category, generation, gis):
+def recreate_item(item_id, category, generation, gis, bucket):
     print("Item not found; creating new item...")
 
     category_path = f"{category}/{item_id}/upload.zip"
@@ -133,12 +131,12 @@ def recreate_item(item_id, category, generation, gis):
     return published_item.id
 
 
-SECRETS = SecretParam("SECRETS")
-
-
-@https_fn.on_call(memory=options.MemoryOption.MB_512, secrets=[SECRETS])
+@https_fn.on_call(memory=options.MemoryOption.MB_512, secrets=["SECRETS"])
 def restore(request: https_fn.CallableRequest) -> str:
-    print("begin request")
+    secrets = get_secrets(environ.get("SECRETS", ""))
+    bucket_name = secrets["BUCKET_NAME"]
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
+
     item_id = request.data.get("item_id")
     category = request.data.get("category")
     generation = request.data.get("generation")
@@ -165,7 +163,7 @@ def restore(request: https_fn.CallableRequest) -> str:
 
     if item_exists:
         if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
-            truncate_and_append(item_id, category, generation, item, gis)
+            truncate_and_append(item_id, category, generation, item, gis, bucket)
 
             return "Item restored successfully via truncate and append"
         else:
@@ -182,6 +180,6 @@ def restore(request: https_fn.CallableRequest) -> str:
             #     print("Failed to update item")
             #     return
     else:
-        new_id = recreate_item(item_id, category, generation, gis)
+        new_id = recreate_item(item_id, category, generation, gis, bucket)
 
         return f"Item restored successfully via recreation. New Item ID: {new_id}"
