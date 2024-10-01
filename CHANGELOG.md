@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/agrc/project-moonwalk/compare/v1.0.2...v1.0.3) (2024-10-01)
+
+
+### Bug Fixes
+
+* **backup:** add cloudrun configs for retries and timeout ([eff624e](https://github.com/agrc/project-moonwalk/commit/eff624e0d3f44d7f415cf3709f5e06eaf82e5f47))
+
 ## [1.0.2](https://github.com/agrc/project-moonwalk/compare/v1.0.1...v1.0.2) (2024-10-01)
 
 
