@@ -26,12 +26,12 @@ def cleanup_restores(gis):
         item.delete(permanent=True)
 
 
-def truncate_and_append(item_id, category, generation, item):
+def truncate_and_append(item_id, category, generation, item, gis):
     category_path = f"{category}/{item_id}/upload.zip"
     blob = bucket.blob(category_path, generation=generation)
 
     with UnzipData(blob) as (_, _, data_zip):
-        fgdb_item = upload_fgdb(data_zip)
+        fgdb_item = upload_fgdb(data_zip, gis)
 
         collection = arcgis.features.FeatureLayerCollection.fromitem(item)
 
@@ -62,7 +62,7 @@ def truncate_and_append(item_id, category, generation, item):
         fgdb_item.delete(permanent=True)
 
 
-def upload_fgdb(zip_path):
+def upload_fgdb(zip_path, gis):
     print("uploading fgdb")
     fgdb_item = gis.content.add(
         item_properties={
@@ -76,14 +76,14 @@ def upload_fgdb(zip_path):
     return fgdb_item
 
 
-def recreate_item(item_id, category, generation):
+def recreate_item(item_id, category, generation, gis):
     print("Item not found; creating new item...")
 
     category_path = f"{category}/{item_id}/upload.zip"
     blob = bucket.blob(category_path, generation=generation)
 
     with UnzipData(blob) as (item_json, _, data_zip):
-        fgdb_item = upload_fgdb(data_zip)
+        fgdb_item = upload_fgdb(data_zip, gis)
 
         print("publishing")
         #: todo: should we worry about restoring layer ids?
@@ -165,7 +165,7 @@ def restore(request: https_fn.CallableRequest) -> str:
 
     if item_exists:
         if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
-            truncate_and_append(item_id, category, generation, item)
+            truncate_and_append(item_id, category, generation, item, gis)
 
             return "Item restored successfully via truncate and append"
         else:
@@ -182,6 +182,6 @@ def restore(request: https_fn.CallableRequest) -> str:
             #     print("Failed to update item")
             #     return
     else:
-        new_id = recreate_item(item_id, category, generation)
+        new_id = recreate_item(item_id, category, generation, gis)
 
         return f"Item restored successfully via recreation. New Item ID: {new_id}"
