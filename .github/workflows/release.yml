@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   deploy-cloudrun-prod:
-    name: Deploy Cloudrun to production
+    name: Deploy Cloud Run to production
     runs-on: ubuntu-latest
     environment:
       name: prod
@@ -38,6 +38,8 @@ jobs:
   deploy-firebase-prod:
     name: Deploy Firebase project to production
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     environment:
       name: prod
       url: https://ut-dts-agrc-moonwalk-prod.web.app/
@@ -54,8 +56,8 @@ jobs:
           identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project_id: ${{ secrets.PROJECT_ID }}
-          build_command: npm run build -- --mode production
           firebase_config: ${{ secrets.FIREBASE_CONFIG }}
+          build_command: npm run build -- --mode production
 
   notify:
     name: Notifications
