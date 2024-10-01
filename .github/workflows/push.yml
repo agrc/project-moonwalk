@@ -33,6 +33,7 @@ jobs:
   deploy-firebase-dev:
     name: Deploy Firebase project to staging
     runs-on: ubuntu-latest
+    if: github.ref_name == 'dev'
     permissions:
       id-token: write
     environment:
