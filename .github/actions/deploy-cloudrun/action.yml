@@ -87,7 +87,7 @@ runs:
         image: us-central1-docker.pkg.dev/${{ inputs.project_id }}/images/job:latest
         timeout: 60m
         secrets: |
-          /secrets/app/secrets.json=secrets:latest
+          /secrets/app/secrets.json=SECRETS:latest
         env_vars: |-
           AGOL_ORG=${{ inputs.agol_org }}
           TAG_NAME=${{ inputs.tag_name }}
