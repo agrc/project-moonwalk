@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/agrc/project-moonwalk/compare/v1.0.0...v1.0.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* clean up deploy conditions ([b527735](https://github.com/agrc/project-moonwalk/commit/b527735585e62f340c0e398d1abb3598572c3288))
+
 ## 1.0.0 (2024-10-01)
 
 
