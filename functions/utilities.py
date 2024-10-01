@@ -4,7 +4,7 @@ import zipfile
 from pathlib import Path
 
 
-def get_secrets():
+def get_secrets(mounted_value):
     """A helper method for loading secrets from either a GCF mount point or a local secrets folder.
     json file
 
@@ -17,9 +17,8 @@ def get_secrets():
 
     secret_folder = Path("/secrets")
 
-    #: Try to get the secrets from the Cloud Function mount point
-    if secret_folder.exists():
-        return json.loads(Path("/secrets/app/secrets.json").read_text(encoding="utf-8"))
+    if mounted_value != "":
+        return json.loads(mounted_value)
 
     #: Otherwise, try to load a local copy for local development
     secret_folder = Path(__file__).parent / "secrets"
