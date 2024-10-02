@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/agrc/project-moonwalk/compare/v1.0.3...v1.0.4) (2024-10-02)
+
+
+### Bug Fixes
+
+* **backup:** handle non-feature-layer items ([6449352](https://github.com/agrc/project-moonwalk/commit/6449352a734467ec78dcd554995dd9aab2e1585e))
+
 ## [1.0.3](https://github.com/agrc/project-moonwalk/compare/v1.0.2...v1.0.3) (2024-10-01)
 
 
