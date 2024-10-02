@@ -1,6 +1,8 @@
 import json
+import tempfile
 from datetime import datetime, timezone
 from os import getenv
+from pathlib import Path
 from pprint import pprint
 
 import arcgis
@@ -93,6 +95,10 @@ def backup():
                     print(
                         f"Failed to export and download {export_item.title} ({export_item.id}), {export_item.status()}"
                     )
+            else:
+                #: create empty zip file in a temporary directory
+                download_path = Path(tempfile.gettempdir()) / zip_filename
+                download_path.touch()
 
             item_json = dict(item)
             add_to_zip(
@@ -100,6 +106,9 @@ def backup():
             )
 
             write_to_bucket(item.id, zip_filename, download_path, NEEDS_WEEKLY_BACKUP)
+
+            #: cleanup
+            Path(download_path).unlink()
 
             summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
 

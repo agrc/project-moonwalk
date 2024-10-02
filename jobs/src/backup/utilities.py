@@ -50,9 +50,6 @@ def write_to_bucket(item_id, filename, path, needs_weekly_backup):
     blob = bucket.blob(category_path)
     blob.upload_from_filename(path)
 
-    #: cleanup
-    Path(path).unlink()
-
 
 def get_versions(item_id):
     bucket_name = get_secrets()["BUCKET_NAME"]
