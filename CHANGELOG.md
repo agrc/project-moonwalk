@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/agrc/project-moonwalk/compare/v1.0.4...v1.0.5) (2024-10-14)
+
+
+### Bug Fixes
+
+* turn off firebase access for now ([2f3c536](https://github.com/agrc/project-moonwalk/commit/2f3c536821721ebf21833f7fc23f5ec1bcd5be45))
+
 ## [1.0.4](https://github.com/agrc/project-moonwalk/compare/v1.0.3...v1.0.4) (2024-10-02)
 
 
