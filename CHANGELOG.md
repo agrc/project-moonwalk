@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.6](https://github.com/agrc/project-moonwalk/compare/v1.0.5...v1.0.6) (2024-10-14)
+
+
+### Bug Fixes
+
+* correct firebase rules syntax ([3fa2916](https://github.com/agrc/project-moonwalk/commit/3fa29161b90ccadcb337c178ccb2fb5416bb8a6d))
+
+
+### Dependencies
+
+* bump the npm_and_yarn group with 2 updates ([cd549dd](https://github.com/agrc/project-moonwalk/commit/cd549dd760b8f321182c0015bbb390c2a6721995))
+
 ## [1.0.5](https://github.com/agrc/project-moonwalk/compare/v1.0.4...v1.0.5) (2024-10-14)
 
 
