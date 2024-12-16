@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@ugrc/utah-design-system';
 import { httpsCallable } from 'firebase/functions';
-import { useFirebaseApp } from './contexts';
+import { useFirebaseFunctions } from '../contexts/FirebaseFunctionsProvider';
 import { MoonwalkBackup, Version } from './types';
 
 export const BackupSchedule = ({ item }: { item: MoonwalkBackup }) => {
-  const { functions } = useFirebaseApp();
+  const { functions } = useFirebaseFunctions();
   const restore = httpsCallable(functions, 'restore');
   const restoreMutation = async (version: Version): Promise<string> => {
     const result = await restore({ item_id: item.itemId, category: version.category, generation: version.generation });
