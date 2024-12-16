@@ -1,7 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { Drawer, Footer, Header, SocialMedia, UgrcLogo, useFirebaseAuth, UtahIdLogin } from '@ugrc/utah-design-system';
+import {
+  Drawer,
+  Footer,
+  Header,
+  SocialMedia,
+  UgrcLogo,
+  useFirebaseApp,
+  useFirebaseAuth,
+  UtahIdLogin,
+} from '@ugrc/utah-design-system';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import { BackupItem } from './components/BackupItem';
@@ -75,6 +85,17 @@ export default function App() {
     queryKey: ['moonwalk'],
     queryFn: getMoonwalkData,
   });
+
+  const app = useFirebaseApp();
+  useEffect(() => {
+    if (app && import.meta.env.DEV) {
+      const auth = getAuth(app);
+      if (!auth.emulatorConfig) {
+        console.log('connecting to auth emulator');
+        connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+      }
+    }
+  }, [app]);
 
   return (
     <>
