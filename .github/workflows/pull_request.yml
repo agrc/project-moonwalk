@@ -49,20 +49,25 @@ jobs:
       - name: ⬇️ Set up code
         uses: actions/checkout@v4
 
+      - name: 📦 Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: ⎔ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: npm
+          cache: pnpm
 
       - name: 📥 Download dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: 🧪 Run tests
-        run: npm test
+        run: pnpm test
 
       - name: 🔍 Lint
-        run: npm run lint
+        run: pnpm run lint
 
   deploy-firebase-preview:
     name: Firebase preview
@@ -86,5 +91,5 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID }}
           firebase_config: ${{ secrets.FIREBASE_CONFIG }}
           preview: 'yes'
-          build_command: npm run build -- --mode dev
+          build_command: pnpm run build -- --mode dev
           repo_token: ${{ secrets.GITHUB_TOKEN }}
