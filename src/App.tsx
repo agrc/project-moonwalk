@@ -6,7 +6,7 @@ import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import { BackupItem } from './components/BackupItem';
 import { BackupSchedule } from './components/BackupSchedule';
-import { MoonwalkBackup } from './components/types';
+import type { MoonwalkBackup } from './components/types';
 import { useFirestore } from './contexts/FirestoreProvider';
 
 const version = import.meta.env.PACKAGE_VERSION;
