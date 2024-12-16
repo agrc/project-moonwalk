@@ -1,5 +1,5 @@
 import { useFirebaseApp } from '@ugrc/utah-design-system';
-import { connectFunctionsEmulator, Functions, getFunctions } from 'firebase/functions';
+import { connectFunctionsEmulator, type Functions, getFunctions } from 'firebase/functions';
 import { createContext, type ReactNode, useContext } from 'react';
 
 type FunctionsContextValue = {

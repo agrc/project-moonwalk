@@ -1,5 +1,5 @@
 import { Button } from '@ugrc/utah-design-system';
-import { MoonwalkBackup } from './types.ts';
+import type { MoonwalkBackup } from './types.ts';
 
 export const BackupItem = ({
   moonwalk,

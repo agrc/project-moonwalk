@@ -51,6 +51,7 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@ugrc/tailwind-preset": "^1.1.0",
+    "@ugrc/tsconfigs": "^1.0.2",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.0",
