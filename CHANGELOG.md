@@ -5,7 +5,7 @@
 
 ### Features
 
-* integrate UtahID sign in ([61cb637](https://github.com/agrc/project-moonwalk/commit/61cb637604dcbcb46343bfff0593b60f712300b5)), closes [#9](https://github.com/agrc/project-moonwalk/issues/9)
+* integrate UtahID sign in ([61cb637](https://github.com/agrc/project-moonwalk/commit/61cb637604dcbcb46343bfff0593b60f712300b5)), ref [#9](https://github.com/agrc/project-moonwalk/issues/9)
 
 
 ### Dependencies
