@@ -20,6 +20,7 @@ The restore service consists of a website that allows you to view your backups a
 1. `conda activate moonwalk-backup`
 1. `cd jobs`
 1. `pip install -e ".[tests]"`
+1. `moonwalk-backup` - Run the backup job to populate the emulator database and bucket with data. Remember to start the emulators in the root project before running this command.
 
 ### Functions
 
