@@ -9,4 +9,9 @@ export default defineConfig({
     // this is only applicable when npm-linking the utah-design-package
     dedupe: ['firebase', '@arcgis/core'],
   },
+  build: {
+    rollupOptions: {
+      external: [/@arcgis\/core\/.*/],
+    },
+  },
 });
