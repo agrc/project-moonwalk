@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.7](https://github.com/agrc/project-moonwalk/compare/v1.0.6...v1.0.7) (2024-12-17)
+
+
+### Features
+
+* integrate UtahID sign in ([61cb637](https://github.com/agrc/project-moonwalk/commit/61cb637604dcbcb46343bfff0593b60f712300b5)), closes [#9](https://github.com/agrc/project-moonwalk/issues/9)
+
+
+### Dependencies
+
+* bump app dependencies ([d8ed074](https://github.com/agrc/project-moonwalk/commit/d8ed074a522a154f85d922e7ae954f1f375e0acf))
+* bump pytest-cov ([94d645c](https://github.com/agrc/project-moonwalk/commit/94d645c3bfa1a5eeb230a29e1728f37ae2522b5d))
+* react 18 -&gt; 19 ([55453f8](https://github.com/agrc/project-moonwalk/commit/55453f8fcf3954c20790913731f0dbc86542e777))
+
+
+### Documentation
+
+* add step for running backup process ([8d5ae61](https://github.com/agrc/project-moonwalk/commit/8d5ae6197437c242027004a85106d9f587fc2e6f))
+* improve setup instructions ([ff9869a](https://github.com/agrc/project-moonwalk/commit/ff9869a31c6dc4ded2754cca45ded17cd8c9a6a0))
+
 ## [1.0.6](https://github.com/agrc/project-moonwalk/compare/v1.0.5...v1.0.6) (2024-10-14)
 
 
