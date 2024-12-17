@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { Button } from '@ugrc/utah-design-system';
+import { Button, useFirebaseFunctions } from '@ugrc/utah-design-system';
 import { httpsCallable } from 'firebase/functions';
-import { useFirebaseFunctions } from '../contexts/FirebaseFunctionsProvider';
 import type { MoonwalkBackup, Version } from './types';
 
 export const BackupSchedule = ({ item }: { item: MoonwalkBackup }) => {

@@ -1,12 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { FirebaseAnalyticsProvider, FirebaseAppProvider, FirebaseAuthProvider } from '@ugrc/utah-design-system';
+import {
+  FirebaseAnalyticsProvider,
+  FirebaseAppProvider,
+  FirebaseAuthProvider,
+  FirebaseFunctionsProvider,
+  FirestoreProvider,
+} from '@ugrc/utah-design-system';
 import { OAuthProvider } from 'firebase/auth';
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import App from './App';
-import { FirebaseFunctionsProvider } from './contexts/FirebaseFunctionsProvider';
-import { FirestoreProvider } from './contexts/FirestoreProvider';
 import './index.css';
 
 let firebaseConfig = {
@@ -24,6 +28,8 @@ const provider = new OAuthProvider('oidc.utahid');
 
 if (import.meta.env.VITE_FIREBASE_CONFIG) {
   firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
+} else {
+  throw new Error('VITE_FIREBASE_CONFIG is not defined');
 }
 
 const MainErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
@@ -43,7 +49,7 @@ const MainErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetE
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  <StrictMode>
     <ErrorBoundary FallbackComponent={MainErrorFallback} onReset={() => window.location.reload()}>
       <FirebaseAppProvider config={firebaseConfig}>
         <FirebaseAuthProvider provider={provider}>
@@ -59,5 +65,5 @@ createRoot(document.getElementById('root')!).render(
         </FirebaseAuthProvider>
       </FirebaseAppProvider>
     </ErrorBoundary>
-  </React.StrictMode>,
+  </StrictMode>,
 );
