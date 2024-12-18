@@ -53,7 +53,7 @@ jobs:
           service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project_id: ${{ secrets.PROJECT_ID }}
           firebase_config: ${{ secrets.FIREBASE_CONFIG }}
-          build_command: npm run build -- --mode dev
+          build_command: pnpm run build -- --mode dev
 
   deploy-cloudrun-dev:
     name: Deploy Cloud Run to dev
