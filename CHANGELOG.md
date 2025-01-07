@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8](https://github.com/agrc/project-moonwalk/compare/v1.0.7...v1.0.8) (2025-01-07)
+
+
+### Dependencies
+
+* bump react-error-boundary in the major-dependencies group ([0c5a44d](https://github.com/agrc/project-moonwalk/commit/0c5a44df43b2edc6d3aea8985d29cd1e5b97e027))
+* bump the safe-dependencies group with 11 updates ([95452db](https://github.com/agrc/project-moonwalk/commit/95452db84cb6866fc852f39d1d95ae29233c2043))
+
 ## [1.0.7](https://github.com/agrc/project-moonwalk/compare/v1.0.6...v1.0.7) (2024-12-17)
 
 
