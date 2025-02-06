@@ -91,5 +91,5 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID }}
           firebase_config: ${{ secrets.FIREBASE_CONFIG }}
           preview: 'yes'
-          build_command: pnpm run build -- --mode dev
+          build_command: pnpm run build --mode dev
           repo_token: ${{ secrets.GITHUB_TOKEN }}
