@@ -13,23 +13,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 import App from './App';
 import './index.css';
 
-let firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
-  measurementId: '',
-};
-
 const provider = new OAuthProvider('oidc.utahid');
 provider.addScope('app:UGRCMoonwalk'); // request submitted to create this app in AP Admin
 
-if (import.meta.env.VITE_FIREBASE_CONFIG) {
-  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
+let firebaseConfig: Record<string, string>;
+if (import.meta.env.VITE_FIREBASE_CONFIGS) {
+  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIGS);
 } else {
-  throw new Error('VITE_FIREBASE_CONFIG is not defined');
+  throw new Error('VITE_FIREBASE_CONFIGS is not defined');
 }
 
 const MainErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
