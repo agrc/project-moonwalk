@@ -12,6 +12,7 @@
     "libkrb",
     "orgid",
     "prebuild",
+    "startcase",
     "tanstack",
     "tsconfigs",
     "utahid",
