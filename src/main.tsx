@@ -24,7 +24,7 @@ let firebaseConfig = {
 };
 
 const provider = new OAuthProvider('oidc.utahid');
-// provider.addScope('app:UGRCMoonwalk'); // request submitted to create this app in AP Admin
+provider.addScope('app:UGRCMoonwalk'); // request submitted to create this app in AP Admin
 
 if (import.meta.env.VITE_FIREBASE_CONFIG) {
   firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
