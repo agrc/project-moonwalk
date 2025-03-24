@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/firebase/firebase-tools/master/schema/firebase-config.json",
   "hosting": {
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
@@ -96,15 +97,21 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "functions": [
     {
-      "source": "functions",
-      "codebase": "default",
+      "source": "functions/node",
+      "codebase": "node",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
+      "predeploy": ["pnpm --prefix \"$RESOURCE_DIR\" run build"]
+    },
+    {
+      "source": "functions/python",
+      "codebase": "python",
       "ignore": ["venv", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
       "runtime": "python312"
     }
-  ],
-  "storage": {
-    "rules": "storage.rules"
-  }
+  ]
 }

@@ -14,7 +14,6 @@ import App from './App';
 import './index.css';
 
 const provider = new OAuthProvider('oidc.utahid');
-provider.addScope('app:UGRCMoonwalk'); // request submitted to create this app in AP Admin
 
 let firebaseConfig: Record<string, string>;
 if (import.meta.env.VITE_FIREBASE_CONFIGS) {
