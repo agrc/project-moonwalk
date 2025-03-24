@@ -1,4 +1,4 @@
-# project-moonwalk
+# Project Moonwalk
 
 Open source ArcGIS Online item backup and restore with style.
 
@@ -24,9 +24,19 @@ The restore service consists of a website that allows you to view your backups a
 
 ### Functions
 
-1. `cd functions`
-1. `python -m venv .venv`
+#### Python
+
+The firebase emulator requires that you create a virtual environment. It does not seem to recognize conda environments.
+
+1. `cd functions/python`
+1. `python -m venv venv`
+1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
+
+#### Node
+
+1. `cd functions/node`
+1. `pnpm install`
 
 Enable versioning on the emulator bucket:
 
