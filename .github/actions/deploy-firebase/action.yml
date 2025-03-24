@@ -32,7 +32,7 @@ runs:
       with:
         python-version: '3.12'
         cache: pip
-        cache-dependency-path: ./functions/requirements.txt
+        cache-dependency-path: ./functions/python/requirements.txt
 
     # this is a requirement for the arcgis package: https://github.com/Esri/arcgis-python-api/issues/1299#issuecomment-1185375010
     - name: Install libkrb5 for Kerberos
@@ -47,7 +47,13 @@ runs:
         identity-provider: ${{ inputs.identity_provider }}
         service-account-email: ${{ inputs.service_account_email }}
         project-id: ${{ inputs.project_id }}
-        prebuild-command: cd functions && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+        prebuild-command: |
+          cd functions/python
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          cd ../node
+          pnpm install
         build-command: ${{ inputs.build_command }}
         preview: ${{ inputs.preview }}
         repo-token: ${{ inputs.repo_token }}
