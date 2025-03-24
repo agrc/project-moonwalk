@@ -30,7 +30,7 @@ The firebase emulator requires that you create a virtual environment. It does no
 
 1. `cd functions/python`
 1. `python -m venv venv`
-1. `source venv/bin/activate`
+1. `source venv/bin/activate` (MacOS) `venv\Scripts\Activate.ps1` (Windows Powershell)
 1. `pip install -r requirements.txt`
 
 #### Node
