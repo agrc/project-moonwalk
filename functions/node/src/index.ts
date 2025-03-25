@@ -22,4 +22,8 @@ async function checkUser(event: AuthBlockingEvent) {
 }
 
 export const beforeCreated = beforeUserCreated(checkUser);
+
+/* This may not be necessary since beforeUserCreated fires before beforeUserSignedIn. Leaving it here in case it's needed for existing users.
+ This also would be a good place to add additional checks for existing users.
+ */
 export const beforeSignedIn = beforeUserSignedIn(checkUser);
