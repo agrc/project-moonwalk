@@ -17,7 +17,7 @@ async function checkUser(event: AuthBlockingEvent) {
   const doc = await ref.get();
 
   if (!doc.exists) {
-    throw new HttpsError('not-found', `User (${email}) is not authorized`);
+    throw new HttpsError('permission-denied', `User (${email}) is not authorized`);
   }
 }
 
