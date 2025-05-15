@@ -1,12 +1,17 @@
 {
   "cSpell.words": [
     "accesstoken",
+    "AGOL",
     "appspot",
+    "arcgis",
     "Buildx",
     "cloudrun",
     "dotenv",
+    "fgdb",
+    "filegdb",
     "firestore",
     "fromitem",
+    "Geodatabase",
     "gserviceaccount",
     "instafail",
     "libkrb",
@@ -14,12 +19,15 @@
     "prebuild",
     "tanstack",
     "tsconfigs",
+    "ugrc",
     "utahid",
     "venv",
     "VITE"
   ],
   "editor.formatOnSave": true,
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "coverage-gutters.showGutterCoverage": false,
   "coverage-gutters.showLineCoverage": true,
   "coverage-gutters.showRulerCoverage": false,

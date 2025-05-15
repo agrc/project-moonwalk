@@ -139,7 +139,7 @@ export default function App() {
           <section className="flex flex-1 items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <h2 className="text-center text-2xl font-bold">Please log in to use the application</h2>
-              <div>
+              <div className="flex flex-col gap-3">
                 <UtahIdLogin />
               </div>
             </div>
