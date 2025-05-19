@@ -63,11 +63,14 @@ jobs:
       - name: 📥 Download dependencies
         run: pnpm install
 
-      - name: 🧪 Run tests
-        run: pnpm test
-
       - name: 🔍 Lint
         run: pnpm run lint
+
+      - name: ✅ Check types
+        run: pnpm run check
+
+      - name: 🧪 Run tests
+        run: pnpm test
 
   deploy-firebase-preview:
     name: Firebase preview
