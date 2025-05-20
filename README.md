@@ -43,3 +43,13 @@ Enable versioning on the emulator bucket:
 ```bash
 gcloud storage buckets update gs://ut-dts-agrc-moonwalk-dev.appspot.com --versioning
 ```
+
+### Dependency Updates
+
+As of 5/20/2025, the `arcgis` python package only supports up through python 3.12. When it adds support for 3.13, the version number will need to be updated in the following locations:
+
+- `.github/actions/deploy-firebase/action.yml`
+- `.github/workflows/pull_request.yml`
+- `firebase.json`
+
+Firebase already supports 3.13.
