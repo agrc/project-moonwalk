@@ -16,10 +16,10 @@ import './index.css';
 const provider = new OAuthProvider('oidc.utahid');
 
 let firebaseConfig: Record<string, string>;
-if (import.meta.env.VITE_FIREBASE_CONFIGS) {
-  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIGS);
+if (import.meta.env.VITE_FIREBASE_CONFIG) {
+  firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
 } else {
-  throw new Error('VITE_FIREBASE_CONFIGS is not defined');
+  throw new Error('VITE_FIREBASE_CONFIG is not defined');
 }
 
 const MainErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
