@@ -58,4 +58,4 @@ runs:
         preview: ${{ inputs.preview }}
         repo-token: ${{ inputs.repo_token }}
       env:
-        VITE_FIREBASE_CONFIGS: ${{ inputs.firebase_config }}
+        VITE_FIREBASE_CONFIG: ${{ inputs.firebase_config }}
