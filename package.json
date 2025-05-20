@@ -34,7 +34,7 @@
     "@tanstack/react-query": "^5.76.1",
     "@ugrc/eslint-config": "^1.2.2",
     "@ugrc/utah-design-system": "^1.27.1",
-    "firebase": "^11.7.3",
+    "firebase": "^11.8.0",
     "ky": "^1.8.1",
     "lodash.startcase": "^4.4.0",
     "react": "^19.1.0",
