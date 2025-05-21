@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.0.10](https://github.com/agrc/project-moonwalk/compare/v1.0.8...v1.0.10) (2025-05-21)
+
+
+### Features
+
+* implement firestore-based authorization ([d32ca2c](https://github.com/agrc/project-moonwalk/commit/d32ca2cb47143c5254aa641f8e0104acf0bfc0de)), closes [#9](https://github.com/agrc/project-moonwalk/issues/9)
+
+
+### Bug Fixes
+
+* add ap admin scope ([52a043a](https://github.com/agrc/project-moonwalk/commit/52a043a1c253d3edc48c8d33ce0ff65dd5e53f06)), closes [#9](https://github.com/agrc/project-moonwalk/issues/9)
+* use more appropriate error code for unauthorized users ([4baa8bb](https://github.com/agrc/project-moonwalk/commit/4baa8bbebce59e0be69fe2e52eacc3687da7ca15))
+
+
+### Dependencies
+
+* bump dependencies ([b25b86d](https://github.com/agrc/project-moonwalk/commit/b25b86de23a190da91cb44fd3f15de56fd69d760))
+* bump firebase in the safe-dependencies group across 1 directory ([0ea5282](https://github.com/agrc/project-moonwalk/commit/0ea52820522110163a1ef630d47b399e452425b8))
+* bump node dependencies 🌲 ([de54423](https://github.com/agrc/project-moonwalk/commit/de544235e5aa37adc18ad6656cdfd633cb102c83))
+
+
+### Documentation
+
+* add windows option for activating venv ([522de79](https://github.com/agrc/project-moonwalk/commit/522de796d7677b842fd5d60b842d3948ca9e3d06))
+
 ## [1.0.8](https://github.com/agrc/project-moonwalk/compare/v1.0.7...v1.0.8) (2025-01-07)
 
 
