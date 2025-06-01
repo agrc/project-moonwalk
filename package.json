@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@tanstack/react-query": "^5.76.1",
+    "@tanstack/react-query": "^5.79.0",
     "@ugrc/eslint-config": "^1.2.2",
     "@ugrc/utah-design-system": "^1.27.1",
     "firebase": "^11.8.0",
