@@ -25,8 +25,12 @@ updates:
       exclude:
         - ugrc-*
         - agrc-*
+
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
+      - /.github/actions/deploy-cloudrun
+      - /.github/actions/deploy-firebase
     schedule:
       interval: monthly
     groups:
@@ -36,6 +40,7 @@ updates:
       default-days: 10
       exclude:
         - agrc/*
+
   - package-ecosystem: npm
     directories:
       - /
