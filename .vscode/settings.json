@@ -5,6 +5,7 @@
     "autoplay",
     "Buildx",
     "cloudrun",
+    "cooldown",
     "dotenv",
     "firestore",
     "fromitem",
