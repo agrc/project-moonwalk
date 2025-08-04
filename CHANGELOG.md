@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.11](https://github.com/agrc/project-moonwalk/compare/v1.0.10...v1.0.11) (2025-08-04)
+
+
+### Dependencies
+
+* a bunch of updates that fixes the build ([06b9622](https://github.com/agrc/project-moonwalk/commit/06b9622011259b66415eacff6ba63adea3ef8fa1))
+* audit fix ([ff60d84](https://github.com/agrc/project-moonwalk/commit/ff60d842f00cbbe29c17589427e1ca2e9510ce8f))
+* bump @ugrc/utah-design-system ([a1413dd](https://github.com/agrc/project-moonwalk/commit/a1413ddb2699b63c21cace52ba1d3ce2f35207a9))
+* bump the major-dependencies group across 2 directories with 3 updates ([1504c53](https://github.com/agrc/project-moonwalk/commit/1504c538229a0cc0c664a79f8ce5230ff9939e57))
+* bump the safe-dependencies group across 1 directory with 21 updates ([9dac50b](https://github.com/agrc/project-moonwalk/commit/9dac50bf3eaec33d4ab944dff7a7ff99ea577a30))
+
 ## [1.0.10](https://github.com/agrc/project-moonwalk/compare/v1.0.8...v1.0.10) (2025-05-21)
 
 
