@@ -22,7 +22,7 @@ Backend Runtime:
 
 - Cloud Services: Firebase (Auth, Firestore, Storage, Hosting, Emulators), Google Cloud Storage (object versioning required), Cloud Run, Cloud Scheduler, AGOL REST APIs (`createReplica`, item export, publish, layer truncate/append).
 
-Tooling: pnpm, TypeScript project references, Vitest, ESLint (@ugrc config), Prettier (multiple plugins), Ruff + Black (Python), GitHub Actions for CI/CD, Dependabot.
+Tooling: pnpm, TypeScript project references, Vitest, ESLint (@ugrc config), Prettier (multiple plugins), Ruff (Python), GitHub Actions for CI/CD, Dependabot.
 
 ## 3. Repository Structure (Key Paths)
 
@@ -70,7 +70,7 @@ JavaScript/TypeScript:
 Python (jobs package):
 
 - Install + tests: In `jobs`: `pip install -e '.[tests]' && pytest`.
-- Code style: Ruff + Black configured (line length 120); current setup via config in `pyproject.toml`.
+- Code style: Ruff configured (line length 120); current setup via config in `pyproject.toml`.
   Python (restore function): manual requirements install; no tests yet.
 
 ## 6. CI/CD Pipelines Summary
