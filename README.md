@@ -20,13 +20,14 @@ The restore service consists of a website that allows you to view your backups a
 1. `conda activate moonwalk-backup`
 1. `cd jobs`
 1. `pip install -e ".[tests]"`
-1. `moonwalk-backup` - Run the backup job to populate the emulator database and bucket with data. Remember to start the emulators in the root project before running this command.
+1. Create `src/backup/secrets/secrets.json` based on `secrets/secrets.example.json`.
+1. `backup` - Run the backup job to populate the emulator database and bucket with data. Remember to start the emulators in the root project before running this command.
 
 ### Functions
 
 #### Python
 
-The firebase emulator requires that you create a virtual environment. It does not seem to recognize conda environments.
+The firebase emulator requires that you create a virtual environment. It does not seem to recognize conda environments. Use [pyenv](https://github.com/pyenv/pyenv) if your system python is not 3.12.
 
 1. `cd functions/python`
 1. `python -m venv venv`
