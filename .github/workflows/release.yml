@@ -34,6 +34,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           agol_org: ${{ vars.AGOL_ORG }}
           tag_name: ${{ vars.TAG_NAME }}
+          environment: PROD
 
   deploy-firebase-prod:
     name: Deploy Firebase project to production

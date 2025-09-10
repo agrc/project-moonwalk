@@ -8,6 +8,15 @@ from pprint import pprint
 import arcgis
 from dotenv import load_dotenv
 
+"""
+Environment Variables (defined locally in .env and set in Github Actions for the cloud projects):
+TAG_NAME: The tag to filter items to back up.
+AGOL_ORG: The URL of the ArcGIS Online organization to back up.
+ENVIRONMENT: Determines the environment (DEV, STAGING, or PROD)
+
+FIRESTORE_EMULATOR_HOST and STORAGE_EMULATOR_HOST are set in .env for local development only.
+"""
+
 load_dotenv()
 
 try:
@@ -57,9 +66,12 @@ def backup():
     ]
 
     while has_more:
+        tag = getenv("TAG_NAME")
+        if getenv("ENVIRONMENT") in ["DEV", "STAGING"]:
+            tag = "test-backup"
         response = gis.content.advanced_search(
             query=f"orgid:{gis.properties.id}",
-            filter=f'tags:{getenv("TAG_NAME")}',
+            filter=f"tags:{tag}",
             max_items=page_size,
             start=start,
         )

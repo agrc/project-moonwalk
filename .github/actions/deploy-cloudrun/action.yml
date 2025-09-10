@@ -92,6 +92,7 @@ runs:
         env_vars: |-
           AGOL_ORG=${{ inputs.agol_org }}
           TAG_NAME=${{ inputs.tag_name }}
+          ENVIRONMENT=${{ inputs.environment }}
         flags: |
           --memory=512Mi
           --service-account=cloud-run-sa@${{ inputs.project_id }}.iam.gserviceaccount.com
