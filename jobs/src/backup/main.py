@@ -5,7 +5,7 @@ from os import getenv
 from pathlib import Path
 from pprint import pprint
 
-import arcgis
+from arcgis.gis import GIS, ItemTypeEnum
 from dotenv import load_dotenv
 
 """
@@ -20,10 +20,17 @@ FIRESTORE_EMULATOR_HOST and STORAGE_EMULATOR_HOST are set in .env for local deve
 load_dotenv()
 
 try:
-    from .utilities import add_to_zip, get_secrets, write_to_bucket, write_to_firestore  # noqa: E402
+    from .utilities import (  # noqa: E402
+        add_to_zip,
+        ensure_export_ready,
+        get_secrets,
+        write_to_bucket,
+        write_to_firestore,
+    )
 except ImportError:
     from utilities import (  # type: ignore
         add_to_zip,  # noqa: E402
+        ensure_export_ready,
         get_secrets,
         write_to_bucket,
         write_to_firestore,
@@ -44,7 +51,7 @@ def cleanup_exports(gis):
 def backup():
     secrets = get_secrets()
 
-    gis = arcgis.gis.GIS(
+    gis = GIS(
         url=getenv("AGOL_ORG"),
         username=secrets["AGOL_USER"],
         password=secrets["AGOL_PASSWORD"],
@@ -57,12 +64,12 @@ def backup():
     start = 1
     summary = {}
     supported_types = [
-        arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value,
+        ItemTypeEnum.FEATURE_SERVICE.value,
         # restoring some of these types below just broken them.
-        arcgis.gis.ItemTypeEnum.WEB_EXPERIENCE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAP.value,
-        arcgis.gis.ItemTypeEnum.WEB_SCENE.value,
-        arcgis.gis.ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
+        ItemTypeEnum.WEB_EXPERIENCE.value,
+        ItemTypeEnum.WEB_MAP.value,
+        ItemTypeEnum.WEB_SCENE.value,
+        ItemTypeEnum.WEB_MAPPING_APPLICATION.value,
     ]
 
     while has_more:
@@ -84,29 +91,24 @@ def backup():
 
             print(f"Preparing {item.title} ({item.type}, {item.id})")
             zip_filename = "backup.zip"
-
-            if item.type == arcgis.gis.ItemTypeEnum.FEATURE_SERVICE.value:
+            if item.type == ItemTypeEnum.FEATURE_SERVICE.value:
                 try:
+                    ensure_export_ready(item)
+
                     print("Requesting feature service export")
                     export_item = item.export(
                         EXPORT_FILENAME,
-                        arcgis.gis.ItemTypeEnum.FILE_GEODATABASE.value,
+                        ItemTypeEnum.FILE_GEODATABASE.value,
                         #: This could be set to false and then we could download later. We tried this and the problem was that we could not find a reliable way to know if the export was complete.
                         wait=True,
                         tags=[],
                     )
-
                     print("Downloading exported item...")
                     download_path = export_item.download(file_name=zip_filename)
-
-                    #: clean up
                     export_item.delete(permanent=True)
-
                 except Exception as error:
-                    print(error)
-                    print(
-                        f"Failed to export and download {export_item.title} ({export_item.id}), {export_item.status()}"
-                    )
+                    print(f"Export failed for {item.title} ({item.id}): {error}")
+                    continue
             else:
                 #: create empty zip file in a temporary directory
                 download_path = Path(tempfile.gettempdir()) / zip_filename
