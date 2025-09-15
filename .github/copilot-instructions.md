@@ -17,8 +17,8 @@ Components:
 Frontend: React 19 + Vite 7 + TypeScript, Tailwind (with `@ugrc` preset), React Query (@tanstack), `@ugrc/utah-design-system` components.
 Backend Runtime:
 
-- Firebase Functions: Node 22 (identity blocking functions) + Python 3.12 function (`restore`).
-- Scheduled Backup Job: Python 3.12 packaged as Docker image deployed to Cloud Run (invoked nightly via Cloud Scheduler) using `arcgis` API.
+- Firebase Functions: Node 22 (identity blocking functions) + Python 3.11 function (`restore`).
+- Scheduled Backup Job: Python 3.11 packaged as Docker image deployed to Cloud Run (invoked nightly via Cloud Scheduler) using `arcgis` API.
 
 - Cloud Services: Firebase (Auth, Firestore, Storage, Hosting, Emulators), Google Cloud Storage (object versioning required), Cloud Run, Cloud Scheduler, AGOL REST APIs (`createReplica`, item export, publish, layer truncate/append).
 
@@ -36,7 +36,7 @@ Tooling: pnpm, TypeScript project references, Vitest, ESLint (@ugrc config), Pre
 
 ## 4. Local Development Basics
 
-Prerequisites: Node LTS with pnpm, Python 3.12, (optional) conda for backup job, gcloud CLI (if touching bucket versioning), Firebase CLI (installed via dev deps), Docker (for parity with Cloud Run), libkrb5 (arcgis dependency; Ubuntu CI already installs).
+Prerequisites: Node LTS with pnpm, Python 3.11, (optional) conda for backup job, gcloud CLI (if touching bucket versioning), Firebase CLI (installed via dev deps), Docker (for parity with Cloud Run), libkrb5 (arcgis dependency; Ubuntu CI already installs).
 
 Frontend + Functions (watch mode):
 
@@ -47,7 +47,7 @@ Frontend + Functions (watch mode):
 
 Backup Job locally (to seed test data):
 
-1. Create env: `conda create --name moonwalk-backup python=3.12` (or venv). Activate it.
+1. Create env: `conda create --name moonwalk-backup python=3.11` (or venv). Activate it.
 2. `cd jobs && pip install -e '.[tests]'`.
 3. Ensure `TAG_NAME` and `AGOL_ORG` env vars + local secrets file (`jobs/src/backup/secrets/secrets.json`) exist; then run `moonwalk-backup`.
 
@@ -77,7 +77,7 @@ Python (jobs package):
 
 Pull Requests:
 
-- Python job unit tests (3.12, installs libkrb5-dev).
+- Python job unit tests (3.11, installs libkrb5-dev).
 - UI lint, type check, tests.
 - Preview Firebase deploy if PR source branch is NOT `dev` and authored by user.
   Push (dev / main):
@@ -113,7 +113,7 @@ In `functions/python/main.py`:
 - Emulator vs real services: The Python restore function may fail if Storage generations absent in emulator; seed data consistent with expected path structure: `short/<item_id>/backup.zip` or `long/<item_id>/backup.zip` (restore expects `category/<item_id>/upload.zip` but backup writes `backup.zip` — note mismatch: restore currently looks for `upload.zip`; backup produces `backup.zip`. If adding features touching restore inputs, align names or introduce translation layer.)
 - Windows virtualenv activation differs (doc included in README). Use an actual venv for Python restore; conda envs not detected by Firebase emulator.
 - Keep Node version 22 for functions (defined in package). Changing requires updating `firebase.json` if runtime config added later.
-- `arcgis` currently limited to Python 3.12; do not bump to 3.13 until support lands (see README dependency updates section).
+- `arcgis` currently limited to Python 3.11; do not bump to 3.13 until support lands (see README dependency updates section).
 
 ## 10. Adding a New Feature (Example Workflow)
 
