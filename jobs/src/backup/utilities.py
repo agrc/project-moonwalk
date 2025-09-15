@@ -3,6 +3,7 @@ from os import getenv
 from pathlib import Path
 from zipfile import ZipFile
 
+from arcgis.features import FeatureLayerCollection
 from google.cloud import firestore, storage
 
 if not getenv("CI"):
@@ -90,3 +91,13 @@ def add_to_zip(zip, items):
     with ZipFile(zip, "w") as zipped_file:
         for name, data in items:
             zipped_file.writestr(name, data)
+
+
+def ensure_export_ready(fs_item):
+    """Ensure a hosted feature service item can be exported."""
+
+    manager = FeatureLayerCollection.fromitem(fs_item).manager
+    if "Extract" not in manager.properties.capabilities:
+        print("Adding Extract capability")
+        manager.properties.capabilities += ",Extract"
+        manager.update_definition({"capabilities": manager.properties.capabilities})
