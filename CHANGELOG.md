@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.12](https://github.com/agrc/project-moonwalk/compare/v1.0.11...v1.0.12) (2025-09-18)
+
+
+### Bug Fixes
+
+* **backup:** ensure export is turned on for feature services ([2206dbc](https://github.com/agrc/project-moonwalk/commit/2206dbc1974932f0de9fa9d04e65c68f46379c84))
+* **backup:** use test-backup as the tag in dev and staging to prevent messing with prod items ([e1d12a4](https://github.com/agrc/project-moonwalk/commit/e1d12a495e69fc02f5031b9ef96f03aee156288b))
+* **jobs:** explicitly define python version ([9d60982](https://github.com/agrc/project-moonwalk/commit/9d60982ce97247fc602df66dd3d7801263f44a88))
+
+
+### Dependencies
+
+* bump the safe-dependencies group across 2 directories with 15 updates ([5a42926](https://github.com/agrc/project-moonwalk/commit/5a429268797b354787a0e10c9238f4d57986dff2))
+* update google-cloud-storage requirement in /jobs ([83d210c](https://github.com/agrc/project-moonwalk/commit/83d210c24bf699fe965f4a6fce2a904e2c109465))
+
 ## [1.0.11](https://github.com/agrc/project-moonwalk/compare/v1.0.10...v1.0.11) (2025-08-04)
 
 
