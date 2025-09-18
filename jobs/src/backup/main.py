@@ -39,6 +39,7 @@ except ImportError:
 NEEDS_WEEKLY_BACKUP = datetime.today().weekday() == 0
 # NEEDS_WEEKLY_BACKUP = True
 EXPORT_FILENAME = "moonwalk-export.zip"
+TEST_BACKUP_TAG = "test-backup"
 
 
 def cleanup_exports(gis):
@@ -75,7 +76,7 @@ def backup():
     while has_more:
         tag = getenv("TAG_NAME")
         if getenv("ENVIRONMENT") in ["DEV", "STAGING"]:
-            tag = "test-backup"
+            tag = TEST_BACKUP_TAG
         response = gis.content.advanced_search(
             query=f"orgid:{gis.properties.id}",
             filter=f"tags:{tag}",
