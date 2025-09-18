@@ -19,10 +19,22 @@ os.environ.setdefault("CI", "1")
 from backup import utilities  # noqa: E402  (import after setting CI)
 
 
-def test_add_to_zip():
+def test_add_to_zip_text():
     with tempfile.TemporaryDirectory() as temp_dir:
         zip_path = Path(temp_dir) / "test.zip"
         utilities.add_to_zip(zip_path, [("test_file.txt", "This is a test file.")])
+        with ZipFile(zip_path, "r") as zip_file:
+            assert "test_file.txt" in zip_file.namelist()
+            with zip_file.open("test_file.txt") as file_in_zip:
+                assert file_in_zip.read().decode("utf-8") == "This is a test file."
+
+
+def test_add_to_zip_path():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        zip_path = Path(temp_dir) / "test.zip"
+        text_file = Path(temp_dir) / "test_file.txt"
+        text_file.write_text("This is a test file.", encoding="utf-8")
+        utilities.add_to_zip(zip_path, [("test_file.txt", text_file)])
         with ZipFile(zip_path, "r") as zip_file:
             assert "test_file.txt" in zip_file.namelist()
             with zip_file.open("test_file.txt") as file_in_zip:
