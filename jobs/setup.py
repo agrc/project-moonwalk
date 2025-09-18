@@ -31,7 +31,7 @@ setup(
     keywords=["gis"],
     install_requires=[
         "arcgis==2.*",
-        "google-cloud-storage>=2,<4",
+        "google-cloud-storage==3.*",
         "google-cloud-firestore==2.*",
         "python-dotenv==1.*",
     ],
