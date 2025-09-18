@@ -97,7 +97,7 @@ def backup():
             backup_zip_path = Path(tempfile.gettempdir()) / zip_filename
             backup_zip_path.touch()
 
-            feature_counts = None
+            row_counts = None
             data_zip_path = None
 
             if item.type == ItemTypeEnum.FEATURE_SERVICE.value:
@@ -121,9 +121,9 @@ def backup():
                     continue
                 try:
                     #: get row counts
-                    feature_counts = {}
+                    row_counts = {}
                     for dataset in item.layers + item.tables:
-                        feature_counts[f"{dataset.properties.id}-{dataset.properties.name}"] = dataset.query(
+                        row_counts[f"{dataset.properties.id}-{dataset.properties.name}"] = dataset.query(
                             return_count_only=True
                         )
                 except Exception as error:
@@ -151,7 +151,7 @@ def backup():
             Path(backup_zip_path).unlink()
 
             summary[item.id] = write_to_firestore(
-                item.id, item.title, datetime.now(timezone.utc).isoformat(), feature_counts
+                item.id, item.title, datetime.now(timezone.utc).isoformat(), row_counts
             )
 
         has_more = response["nextStart"] > 0
