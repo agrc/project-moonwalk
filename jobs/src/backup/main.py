@@ -91,7 +91,14 @@ def backup():
                 continue
 
             print(f"Preparing {item.title} ({item.type}, {item.id})")
+
+            #: create empty zip file in a temporary directory
             zip_filename = "backup.zip"
+            backup_zip_path = Path(tempfile.gettempdir()) / zip_filename
+            backup_zip_path.touch()
+
+            data_zip_path = None
+
             if item.type == ItemTypeEnum.FEATURE_SERVICE.value:
                 try:
                     ensure_export_ready(item)
@@ -105,8 +112,9 @@ def backup():
                         tags=[],
                     )
                     print("Downloading exported item...")
-                    download_path = export_item.download(file_name=zip_filename)
+                    data_zip_path = Path(export_item.download(file_name="data.zip"))
                     export_item.delete(permanent=True)
+
                 except Exception as error:
                     print(f"Export failed for {item.title} ({item.id}): {error}")
                     continue
@@ -116,14 +124,24 @@ def backup():
                 download_path.touch()
 
             item_json = dict(item)
+            if "layers" in item_json:
+                del item_json["layers"]
+            if "tables" in item_json:
+                del item_json["tables"]
+
             add_to_zip(
-                download_path, [("item.json", json.dumps(item_json)), ("data.json", json.dumps(item.get_data()))]
+                backup_zip_path,
+                [
+                    ("item.json", json.dumps(item_json)),
+                    ("data.json", json.dumps(item.get_data())),
+                    ("data.zip", data_zip_path),
+                ],
             )
 
-            write_to_bucket(item.id, zip_filename, download_path, NEEDS_WEEKLY_BACKUP)
+            write_to_bucket(item.id, zip_filename, backup_zip_path, NEEDS_WEEKLY_BACKUP)
 
             #: cleanup
-            Path(download_path).unlink()
+            Path(backup_zip_path).unlink()
 
             summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
 

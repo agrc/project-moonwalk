@@ -90,7 +90,12 @@ def write_to_firestore(item_id, item_name, date):
 def add_to_zip(zip, items):
     with ZipFile(zip, "w") as zipped_file:
         for name, data in items:
-            zipped_file.writestr(name, data)
+            if data is None:
+                continue
+            if isinstance(data, Path):
+                zipped_file.write(data, name)
+            else:
+                zipped_file.writestr(name, data)
 
 
 def ensure_export_ready(fs_item):
