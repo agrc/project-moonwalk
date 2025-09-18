@@ -97,6 +97,7 @@ def backup():
             backup_zip_path = Path(tempfile.gettempdir()) / zip_filename
             backup_zip_path.touch()
 
+            feature_counts = None
             data_zip_path = None
 
             if item.type == ItemTypeEnum.FEATURE_SERVICE.value:
@@ -118,10 +119,16 @@ def backup():
                 except Exception as error:
                     print(f"Export failed for {item.title} ({item.id}): {error}")
                     continue
-            else:
-                #: create empty zip file in a temporary directory
-                download_path = Path(tempfile.gettempdir()) / zip_filename
-                download_path.touch()
+                try:
+                    #: get row counts
+                    feature_counts = {}
+                    for dataset in item.layers + item.tables:
+                        feature_counts[f"{dataset.properties.id}-{dataset.properties.name}"] = dataset.query(
+                            return_count_only=True
+                        )
+                except Exception as error:
+                    print(f"Feature count failed for {item.title} ({item.id}): {error}")
+                    continue
 
             item_json = dict(item)
             if "layers" in item_json:
@@ -143,7 +150,9 @@ def backup():
             #: cleanup
             Path(backup_zip_path).unlink()
 
-            summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
+            summary[item.id] = write_to_firestore(
+                item.id, item.title, datetime.now(timezone.utc).isoformat(), feature_counts
+            )
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
