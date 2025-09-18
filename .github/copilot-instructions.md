@@ -110,7 +110,11 @@ In `functions/python/main.py`:
 
 - ArcGIS `arcgis` package requires `libkrb5-dev` + sometimes `requests-kerberos` (CI installs). If local export fails on Linux, install those libs.
 - Ensure bucket versioning enabled; restore logic uses object generations. Missing versioning => restore fails (no generations).
-- Emulator vs real services: The Python restore function may fail if Storage generations absent in emulator; seed data consistent with expected path structure: `short/<item_id>/backup.zip` or `long/<item_id>/backup.zip` (restore expects `category/<item_id>/upload.zip` but backup writes `backup.zip` — note mismatch: restore currently looks for `upload.zip`; backup produces `backup.zip`. If adding features touching restore inputs, align names or introduce translation layer.)
+- Emulator vs real services:
+  - The Python restore function may fail if Storage generations are absent in the emulator.
+  - Seed data should be consistent with the expected path structure: `short/<item_id>/backup.zip` or `long/<item_id>/backup.zip`.
+  - Note: Restore expects `category/<item_id>/upload.zip`, but backup writes `backup.zip`. There is a mismatch—restore currently looks for `upload.zip`, while backup produces `backup.zip`.
+  - If adding features that touch restore inputs, align file names or introduce a translation layer.
 - Windows virtualenv activation differs (doc included in README). Use an actual venv for Python restore; conda envs not detected by Firebase emulator.
 - Keep Node version 22 for functions (defined in package). Changing requires updating `firebase.json` if runtime config added later.
 - `arcgis` currently limited to Python 3.11; do not bump to 3.13 until support lands (see README dependency updates section).
