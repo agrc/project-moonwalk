@@ -52,7 +52,7 @@ def write_to_bucket(item_id, filename, path, needs_weekly_backup):
     blob.upload_from_filename(path)
 
 
-def get_versions(item_id: str, feature_counts: dict | None = None):
+def get_versions(item_id: str, row_counts: dict | None = None):
     bucket_name = get_secrets()["BUCKET_NAME"]
     bucket = STORAGE_CLIENT.bucket(bucket_name)
 
@@ -70,19 +70,19 @@ def get_versions(item_id: str, feature_counts: dict | None = None):
     ]
 
     versions.sort(key=lambda x: x["updated"], reverse=True)
-    if versions and feature_counts:
-        versions[0]["featureCounts"] = feature_counts
+    if versions and row_counts:
+        versions[0]["rowCounts"] = row_counts
 
     return versions
 
 
-def write_to_firestore(item_id, item_name, date, feature_counts: dict | None = None):
+def write_to_firestore(item_id, item_name, date, row_counts: dict | None = None):
     print("writing to firestore")
     ref = FIRESTORE_CLIENT.collection("items").document(item_id)
     data = {
         "name": item_name,
         "lastBackup": date,
-        "versions": get_versions(item_id, feature_counts),
+        "versions": get_versions(item_id, row_counts),
     }
     ref.set(data)
 
