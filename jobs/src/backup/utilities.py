@@ -90,14 +90,16 @@ def get_versions(item_id: str):
     return versions
 
 
-def write_to_firestore(item_id, item_name, date):
+def write_to_firestore(item_id: str, item_name: str, date: str, item_type: str) -> dict:
     print("writing to firestore")
     ref = FIRESTORE_CLIENT.collection("items").document(item_id)
     data = {
         "name": item_name,
         "lastBackup": date,
         "versions": get_versions(item_id),
+        "itemType": item_type,
     }
+
     ref.set(data)
 
     return data

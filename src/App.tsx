@@ -1,20 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  Drawer,
-  Footer,
-  Header,
-  SocialMedia,
-  UgrcLogo,
-  useFirebaseAuth,
-  useFirestore,
-  UtahIdLogin,
-} from '@ugrc/utah-design-system';
+import { Drawer, Footer, Header, UgrcLogo, useFirebaseAuth, useFirestore, UtahIdLogin } from '@ugrc/utah-design-system';
 import { collection, getDocs } from 'firebase/firestore';
 import { useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import { BackupItem } from './components/BackupItem';
-import { BackupSchedule } from './components/BackupSchedule';
+import { Versions } from './components/BackupSchedule';
 import type { MoonwalkBackup } from './components/types';
 
 const version = import.meta.env.PACKAGE_VERSION;
@@ -101,7 +92,7 @@ export default function App() {
               <div className="mx-2 mb-2 grid grid-cols-1 gap-2">
                 <h2 className="text-xl font-bold">Available restore points</h2>
                 <div className="flex flex-col gap-4 rounded border border-zinc-200 p-3 dark:border-zinc-700">
-                  {selected && <BackupSchedule item={selected} />}
+                  {selected && <Versions item={selected} />}
                 </div>
               </div>
             </Drawer>
@@ -119,20 +110,7 @@ export default function App() {
                     />
                   ))}
                 {error && <ErrorFallback error={error} />}
-                <Drawer
-                  type="tray"
-                  className="shadow-inner dark:shadow-white/20"
-                  allowFullScreen
-                  state={trayState}
-                  {...trayTriggerProps}
-                >
-                  <section className="grid gap-2 px-7 pt-2">
-                    <h2 className="text-center">What&#39;s here?</h2>
-                    Features: 25,001
-                  </section>
-                </Drawer>
               </div>
-              <SocialMedia />
             </div>
           </section>
         ) : (

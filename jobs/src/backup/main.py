@@ -150,7 +150,12 @@ def backup():
             #: cleanup
             Path(backup_zip_path).unlink()
 
-            summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
+            summary[item.id] = write_to_firestore(
+                item.id,
+                item.title,
+                datetime.now(timezone.utc).isoformat(),
+                item.type,
+            )
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
