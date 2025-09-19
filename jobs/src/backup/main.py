@@ -149,6 +149,8 @@ def backup():
 
             #: cleanup
             Path(backup_zip_path).unlink()
+            if data_zip_path is not None and Path(data_zip_path).exists():
+                Path(data_zip_path).unlink()
 
             summary[item.id] = write_to_firestore(
                 item.id,
