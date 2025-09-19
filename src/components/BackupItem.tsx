@@ -13,7 +13,7 @@ export const BackupItem = ({
       <span className="self-center">{moonwalk.name}</span>
       <span className="self-center italic">{moonwalk.itemType}</span>
       <Button variant="secondary" onPress={() => select(moonwalk)}>
-        Versions
+        Details
       </Button>
     </div>
   );
