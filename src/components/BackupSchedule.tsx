@@ -3,7 +3,7 @@ import { Button, useFirebaseFunctions } from '@ugrc/utah-design-system';
 import { httpsCallable } from 'firebase/functions';
 import type { MoonwalkBackup, Version } from './types';
 
-export const BackupSchedule = ({ item }: { item: MoonwalkBackup }) => {
+export const Versions = ({ item }: { item: MoonwalkBackup }) => {
   const { functions } = useFirebaseFunctions();
   const restore = httpsCallable(functions, 'restore');
   const restoreMutation = async (version: Version): Promise<string> => {
@@ -17,16 +17,57 @@ export const BackupSchedule = ({ item }: { item: MoonwalkBackup }) => {
   return (
     <>
       <h4>Versions</h4>
-      <div className="grid grid-flow-row grid-cols-1 gap-1">
-        {item.versions.map((version) =>
-          version ? (
-            <Button variant="primary" key={version.generation} isDisabled={isPending} onPress={() => mutate(version)}>
-              {new Date(version.updated.toDate()).toLocaleString()}
-            </Button>
-          ) : null,
-        )}
-        {data ? <div>Restore successful: {data}</div> : null}
-        {error ? <div>Restore failed: {error.message}</div> : null}
+      <div className="grid grid-cols-1 gap-3">
+        {item.versions.map((version) => {
+          if (!version) return null;
+
+          const entries = Object.entries(version.rowCounts ?? {});
+          const hasCounts = entries.length > 0;
+
+          return (
+            <div
+              key={version.generation}
+              className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+            >
+              <div className="font-medium">{new Date(version.updated.toDate()).toLocaleString()}</div>
+
+              <div className="mb-3">
+                {hasCounts ? (
+                  <ul className="mt-1 divide-y divide-slate-100 text-sm dark:divide-slate-700">
+                    {entries.map(([layer, count]) => (
+                      <li key={layer} className="flex items-center justify-between py-1">
+                        <span className="truncate pr-2 text-slate-600 dark:text-slate-300" title={layer}>
+                          {layer}
+                        </span>
+                        <span className="font-mono tabular-nums">{count.toLocaleString()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="mt-1 text-sm italic text-slate-500">No row counts available</div>
+                )}
+              </div>
+
+              <div className="flex justify-end">
+                <Button variant="primary" isDisabled={isPending} onPress={() => mutate(version)}>
+                  {isPending ? 'Restoring…' : 'Restore'}
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* status messages */}
+        {data ? (
+          <div className="col-span-full rounded-md border border-green-200 bg-green-50 p-2 text-green-800">
+            Restore successful: {data}
+          </div>
+        ) : null}
+        {error ? (
+          <div className="col-span-full rounded-md border border-red-200 bg-red-50 p-2 text-red-800">
+            Restore failed: {error.message}
+          </div>
+        ) : null}
       </div>
     </>
   );
