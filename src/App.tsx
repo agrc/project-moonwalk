@@ -46,13 +46,6 @@ export default function App() {
     },
     sideBarState,
   );
-  const trayState = useOverlayTriggerState({ defaultOpen: false });
-  const trayTriggerProps = useOverlayTrigger(
-    {
-      type: 'dialog',
-    },
-    trayState,
-  );
   const [selected, setSelected] = useState<MoonwalkBackup | undefined>();
 
   const { firestore } = useFirestore();
