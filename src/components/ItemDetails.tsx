@@ -3,7 +3,7 @@ import { Button, useFirebaseFunctions } from '@ugrc/utah-design-system';
 import { httpsCallable } from 'firebase/functions';
 import type { MoonwalkBackup, Version } from './types';
 
-export const Versions = ({ item }: { item: MoonwalkBackup }) => {
+export const ItemDetails = ({ item }: { item: MoonwalkBackup }) => {
   const { functions } = useFirebaseFunctions();
   const restore = httpsCallable(functions, 'restore');
   const restoreMutation = async (version: Version): Promise<string> => {
@@ -16,7 +16,9 @@ export const Versions = ({ item }: { item: MoonwalkBackup }) => {
 
   return (
     <>
-      <h4>Versions</h4>
+      <h3 className="font-medium">{item.name}</h3>
+      <span className="text-xs dark:divide-slate-700">{item.itemId}</span>
+      <h4>Restore Points</h4>
       <div className="grid grid-cols-1 gap-3">
         {item.versions.map((version) => {
           if (!version) return null;
@@ -36,9 +38,7 @@ export const Versions = ({ item }: { item: MoonwalkBackup }) => {
                   <ul className="mt-1 divide-y divide-slate-100 text-sm dark:divide-slate-700">
                     {entries.map(([layer, count]) => (
                       <li key={layer} className="flex items-center justify-between py-1">
-                        <span className="truncate pr-2 text-slate-600 dark:text-slate-300" title={layer}>
-                          {layer}
-                        </span>
+                        <span className="truncate pr-2 text-slate-600 dark:text-slate-300">{layer}</span>
                         <span className="font-mono tabular-nums">{count.toLocaleString()}</span>
                       </li>
                     ))}
