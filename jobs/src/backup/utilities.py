@@ -39,7 +39,7 @@ def get_secrets():
     raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
-def write_to_bucket(item_id, filename, path, needs_weekly_backup):
+def write_to_bucket(item_id, filename, path, needs_weekly_backup, row_counts: dict | None = None):
     bucket_name = get_secrets()["BUCKET_NAME"]
     bucket = STORAGE_CLIENT.bucket(bucket_name)
 
@@ -49,40 +49,54 @@ def write_to_bucket(item_id, filename, path, needs_weekly_backup):
         category_path = f"long/{item_id}/{filename}"
 
     blob = bucket.blob(category_path)
+
+    if row_counts:
+        # Convert row_counts to string metadata (GCS metadata values must be strings)
+        metadata = {
+            "row_counts": json.dumps(row_counts),
+        }
+        blob.metadata = metadata
+
     blob.upload_from_filename(path)
 
 
-def get_versions(item_id: str, row_counts: dict | None = None):
+def get_versions(item_id: str):
     bucket_name = get_secrets()["BUCKET_NAME"]
     bucket = STORAGE_CLIENT.bucket(bucket_name)
 
-    #: get versions of this blog
-    glob = f"**/{item_id}/backup.zip"
-    version_blobs = bucket.list_blobs(match_glob=glob, versions=True)
+    short_blobs = bucket.list_blobs(prefix=f"short/{item_id}/backup.zip", versions=True)
+    long_blobs = bucket.list_blobs(prefix=f"long/{item_id}/backup.zip", versions=True)
+    all_blobs = list(short_blobs) + list(long_blobs)
 
-    versions = [
-        {
+    versions = []
+
+    for blob in all_blobs:
+        data = {
             "category": Path(blob.name).parts[0],
             "generation": blob.generation,
             "updated": blob.updated,
         }
-        for blob in version_blobs
-    ]
+        if blob.metadata and "row_counts" in blob.metadata:
+            try:
+                # Parse the JSON string back to a dictionary
+                parsed_row_counts = json.loads(blob.metadata["row_counts"])
+                data["rowCounts"] = parsed_row_counts
+            except (json.JSONDecodeError, KeyError):
+                pass  # If parsing fails, just don't add rowCounts
+        versions.append(data)
 
     versions.sort(key=lambda x: x["updated"], reverse=True)
-    if versions and row_counts:
-        versions[0]["rowCounts"] = row_counts
 
     return versions
 
 
-def write_to_firestore(item_id, item_name, date, row_counts: dict | None = None):
+def write_to_firestore(item_id, item_name, date):
     print("writing to firestore")
     ref = FIRESTORE_CLIENT.collection("items").document(item_id)
     data = {
         "name": item_name,
         "lastBackup": date,
-        "versions": get_versions(item_id, row_counts),
+        "versions": get_versions(item_id),
     }
     ref.set(data)
 

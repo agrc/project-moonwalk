@@ -145,14 +145,12 @@ def backup():
                 ],
             )
 
-            write_to_bucket(item.id, zip_filename, backup_zip_path, NEEDS_WEEKLY_BACKUP)
+            write_to_bucket(item.id, zip_filename, backup_zip_path, NEEDS_WEEKLY_BACKUP, row_counts)
 
             #: cleanup
             Path(backup_zip_path).unlink()
 
-            summary[item.id] = write_to_firestore(
-                item.id, item.title, datetime.now(timezone.utc).isoformat(), row_counts
-            )
+            summary[item.id] = write_to_firestore(item.id, item.title, datetime.now(timezone.utc).isoformat())
 
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
