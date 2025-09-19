@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.0.13](https://github.com/agrc/project-moonwalk/compare/v1.0.12...v1.0.13) (2025-09-19)
+
+
+### Features
+
+* add feature counts per layer to firestore version information ([e0b09f8](https://github.com/agrc/project-moonwalk/commit/e0b09f81f4465d72646a11af0d7ddf57d3e5a102)), closes [#11](https://github.com/agrc/project-moonwalk/issues/11)
+* add item type and row counts to front end ([c205f60](https://github.com/agrc/project-moonwalk/commit/c205f602ab94eb90265bc1cfbfbe7941913a6908)), closes [#11](https://github.com/agrc/project-moonwalk/issues/11)
+* show item id in details component ([a4c71c2](https://github.com/agrc/project-moonwalk/commit/a4c71c2b5d63ea4d17dc3104f4ce7d3fc653d377))
+
+
+### Bug Fixes
+
+* **backup:** clean up data export zip file ([c69ccf0](https://github.com/agrc/project-moonwalk/commit/c69ccf0a350bece0c6c5eac1967e8b6e7b1c118b))
+* fix bug preventing feature data from being backed up ([d95c3d9](https://github.com/agrc/project-moonwalk/commit/d95c3d985d43e38abac98883979e655ab498af66))
+* move row counts to blob metadata and fix query for blob versions ([fbcf03f](https://github.com/agrc/project-moonwalk/commit/fbcf03f23b14b3fa008a05380120a15c1e0cc2d1))
+
+
+### Dependencies
+
+* bump node deps 🌲 ([e3f806d](https://github.com/agrc/project-moonwalk/commit/e3f806d30925d18c92f73aacd5b777bd7cbf7b7e))
+
 ## [1.0.12](https://github.com/agrc/project-moonwalk/compare/v1.0.11...v1.0.12) (2025-09-18)
 
 
