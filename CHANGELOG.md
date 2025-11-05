@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.14](https://github.com/agrc/project-moonwalk/compare/v1.0.13...v1.0.14) (2025-11-05)
+
+
+### Dependencies
+
+* bump actions 🌲 ([9bb529c](https://github.com/agrc/project-moonwalk/commit/9bb529cabf580cdc535394bdf58d3edd57a5bb4c))
+* bump npm dependencies 🌲 ([3f3ca06](https://github.com/agrc/project-moonwalk/commit/3f3ca06d942b20748cddd56b43d844c5794f297c))
+* bump python dependencies ([d38dfd2](https://github.com/agrc/project-moonwalk/commit/d38dfd272e9370de557442760c625b6e6d93ce99))
+* bump the safe-dependencies group across 1 directory with 5 updates ([6124dcf](https://github.com/agrc/project-moonwalk/commit/6124dcff8cbe3fda07fedbfcc1d3036ba01021cc))
+* update firebase-functions requirement in /functions/python ([dd84784](https://github.com/agrc/project-moonwalk/commit/dd847849ababd47a4bcdf87fa41fe5c8aa745744))
+
 ## [1.0.13](https://github.com/agrc/project-moonwalk/compare/v1.0.12...v1.0.13) (2025-09-19)
 
 
