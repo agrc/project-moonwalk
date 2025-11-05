@@ -29,8 +29,7 @@ updates:
   - package-ecosystem: github-actions
     directories:
       - /
-      - /.github/actions/deploy-cloudrun
-      - /.github/actions/deploy-firebase
+      - /.github/actions/*
     schedule:
       interval: monthly
     groups:
