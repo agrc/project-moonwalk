@@ -111,7 +111,7 @@
       "source": "functions/python",
       "codebase": "python",
       "ignore": ["venv", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
-      "runtime": "python311"
+      "runtime": "python313"
     }
   ]
 }

@@ -16,7 +16,7 @@ The restore service consists of a website that allows you to view your backups a
 
 ### Jobs
 
-1. `conda create --name moonwalk-backup python=3.11`
+1. `conda create --name moonwalk-backup python=3.13`
 1. `conda activate moonwalk-backup`
 1. `cd jobs`
 1. `pip install -e ".[tests]"`
@@ -28,7 +28,7 @@ The restore service consists of a website that allows you to view your backups a
 
 #### Python
 
-The firebase emulator requires that you create a virtual environment. It does not seem to recognize conda environments. Use [pyenv](https://github.com/pyenv/pyenv) if your system python is not 3.11.
+The firebase emulator requires that you create a virtual environment. It does not seem to recognize conda environments. Use [pyenv](https://github.com/pyenv/pyenv) if your system python is not 3.13.
 
 1. `cd functions/python`
 1. `python -m venv venv`
@@ -45,13 +45,3 @@ Enable versioning on the emulator bucket:
 ```bash
 gcloud storage buckets update gs://ut-dts-agrc-moonwalk-dev.appspot.com --versioning
 ```
-
-### Dependency Updates
-
-As of 5/20/2025, the `arcgis` python package only supports up through python 3.11. When it adds support for 3.13, the version number will need to be updated in the following locations:
-
-- `.github/actions/deploy-firebase/action.yml`
-- `.github/workflows/pull_request.yml`
-- `firebase.json`
-
-Firebase already supports 3.13.
