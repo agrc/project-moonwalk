@@ -105,14 +105,29 @@ def backup():
                     ensure_export_ready(item)
 
                     print("Requesting feature service export")
-                    export_item = item.export(
+                    job = item.export(
                         EXPORT_FILENAME,
                         ItemTypeEnum.FILE_GEODATABASE.value,
-                        #: This could be set to false and then we could download later. We tried this and the problem was that we could not find a reliable way to know if the export was complete.
-                        wait=True,
+                        wait=False,
                         tags=[],
                     )
+                    print("job:", job)
+                    done = False
+                    while not done:
+                        print("Waiting for export to complete...")
+                        job_status = item.status(job["jobId"], job_type="export")
+                        print(job_status)
+                        if job_status["status"] == "completed":
+                            done = True
+                        elif job_status["status"] == "failed":
+                            raise Exception(f"Export job failed: {job_status.get('statusMessage')}")
+                        else:
+                            import time
+
+                            time.sleep(5)
+
                     print("Downloading exported item...")
+                    export_item = gis.content.get(job["exportItemId"])
                     data_zip_path = Path(export_item.download(file_name="data.zip"))
                     export_item.delete(permanent=True)
 
@@ -162,7 +177,9 @@ def backup():
         has_more = response["nextStart"] > 0
         start = response["nextStart"]
 
-    pprint(summary)
+    if getenv("ENVIRONMENT") == "DEV":
+        print("Backup summary:")
+        pprint(summary)
 
 
 if __name__ == "__main__":
