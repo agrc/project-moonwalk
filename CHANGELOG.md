@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.15](https://github.com/agrc/project-moonwalk/compare/v1.0.14...v1.0.15) (2026-01-26)
+
+
+### Bug Fixes
+
+* redeploy after security exception ([77f6248](https://github.com/agrc/project-moonwalk/commit/77f6248ba459d7c0e8e7413e7a53bf1f62da53d0))
+
 ## [1.0.14](https://github.com/agrc/project-moonwalk/compare/v1.0.13...v1.0.14) (2025-11-05)
 
 
