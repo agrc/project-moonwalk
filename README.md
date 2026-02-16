@@ -55,3 +55,7 @@ As of 5/20/2025, the `arcgis` python package only supports up through python 3.1
 - `firebase.json`
 
 Firebase already supports 3.13.
+
+## Attribution
+
+This project was developed with the assistance of [GitHub Copilot](https://github.com/features/copilot).
