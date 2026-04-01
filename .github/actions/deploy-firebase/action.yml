@@ -42,7 +42,7 @@ runs:
         pip install requests-kerberos
 
     - name: 🚀 Deploy Firebase
-      uses: agrc/firebase-website-deploy-composite-action@v1
+      uses: agrc/firebase-website-deploy-composite-action@v2
       with:
         identity-provider: ${{ inputs.identity_provider }}
         service-account-email: ${{ inputs.service_account_email }}
